@@ -22,10 +22,6 @@
                             <li class="nav-item"><a class="nav-link" href="manage_posts.php">Manage Posts</a></li>
                             <li class="nav-item"><a class="nav-link" href="manage_accounts.php">Manage Accounts</a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
-                            <li class="nav-item"><a class="nav-link" href="giohang.php"><i
-                                        class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a></li>
-                        <?php endif ?>
                         <?php if (isset($_SESSION['user'])): ?>
                             <!-- Dropdown -->
                             <li class="nav-item dropdown">

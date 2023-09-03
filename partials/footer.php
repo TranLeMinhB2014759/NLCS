@@ -18,10 +18,7 @@
                     <li><a href="../">Homepage</a></li>
                     <?php if (!isset($_SESSION['user'])): ?>
                         <li><a href="login.php">Login</a></li>
-                        <li><a href="register.php">Register</a></li>
-                    <?php endif ?>
-                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
-                        <li class="nav-item"><a class="nav-link" href="giohang.php">Giỏ hàng</a></li>
+                        <li><a href="register.php">Sign Up</a></li>
                     <?php endif ?>
                     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
                         <li><a href="manage_posts.php">Manage Posts</a></li>
