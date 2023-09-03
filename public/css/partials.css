@@ -1,0 +1,22 @@
+.logo{
+    display: flex;
+}
+
+.title-logo{
+    margin-left: 13px;
+    margin-top: 13px;
+}
+
+.title-logo h2{
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.title-logo h1{
+    font-size: 23px;
+    font-family: roboto slab;
+}
+
+.login-signup{
+    padding-top: 80px;
+}
