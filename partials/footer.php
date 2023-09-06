@@ -15,7 +15,7 @@
             <div class="col-xs-6 col-md-3">
                 <h6>Quick Links</h6>
                 <ul class="footer-links">
-                    <li><a href="../">Homepage</a></li>
+                    <li><a href="../">Look up documents</a></li>
                     <?php if (!isset($_SESSION['user'])): ?>
                         <li><a href="login.php">Login</a></li>
                         <li><a href="register.php">Sign Up</a></li>

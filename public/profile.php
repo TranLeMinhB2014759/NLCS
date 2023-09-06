@@ -15,6 +15,7 @@ include '../partials/check_user.php';
     <!----- Bootstrap 4.6.2 ----->
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="css/partials.css">
     <link rel="stylesheet" type="text/css" href="css/profile.css">
@@ -35,13 +36,14 @@ include '../partials/check_user.php';
                             <li id="tab2"><a href="#" onclick="active_borrow()">Sách đã mượn</a></li>
                             <li id="tab3"><a href="#" onclick="active_giveback()">Sách đã trả</a></li>
                             <li id="tab4"><a href="#" onclick="active_expired()">Sắp hết hạn</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <div class="mainContent col-sm-9">
                 <div class="group-box min-height">
-                    <div class="title text-center">Thông báo</div>
+                    <div class="title text-center">Notification</div>
                     <?php if (isset($_SESSION['user']['success'])): ?>
                     <div class="alert alert-success text-center">
                         <?php echo $_SESSION['user']['success'] ?>
@@ -58,7 +60,7 @@ include '../partials/check_user.php';
                     <div class="container">
                         <br>
                         <!-- Avatar -->
-                        <div class="main-content tab1">
+                        <div class="tab1 main-content animate__animated">
                             <h3 class="text-center">Thông tin chung</h3>
                             <div class="row">
                                 <div class="col"></div>
@@ -291,9 +293,9 @@ include '../partials/check_user.php';
                                         id="delete" title="Xóa tài khoản">Delete your Account?</a></div>
                             </div>
                         </div>
-                        <div class="text-center tab2" style="display:none">Không có thông tin</div>
-                        <div class="text-center tab3" style="display:none">Không có thông tin</div>
-                        <div class="text-center tab4" style="display:none">Không có thông tin</div>
+                        <div class="tab2 text-center animate__animated" style="display:none">Không có thông tin</div>
+                        <div class="tab3 text-center animate__animated" style="display:none">Không có thông tin</div>
+                        <div class="tab4 text-center animate__animated" style="display:none">Không có thông tin</div>
 
                     </div>
                 </div>

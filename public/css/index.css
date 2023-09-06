@@ -48,6 +48,10 @@ strong {
   font-size: 1.5rem;
 }
 
+p {
+  font-size: 1rem;
+}
+
 /* Footer styling */
 .site-footer {
   background-color: #26272b;
@@ -219,7 +223,6 @@ a{
   text-decoration: none !important;
 }
 
-
 /* Khai báo animation */
 @keyframes slide {
   0% {
@@ -231,6 +234,10 @@ a{
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.carousel-caption{
+  background-color: rgba(0,0,0,0.5);
 }
 
 .animationSlide {
@@ -265,4 +272,35 @@ header.hide{
 
 label{
   margin: 5px;
+}
+
+
+.main{
+  background-color: white;
+}
+
+.child-container{
+  height: 700px;
+  max-width: 1200px;
+  margin: auto;
+  background-size: 100% 100%;
+  background-image: url(../image/bg-ctu.png);
+}
+
+.form-search{
+  display: flex;
+  justify-content: end;
+  padding: 0 20px;
+}
+
+.search{
+  max-width: 450px;
+  border: 3px solid;
+  border-image-source: conic-gradient(red, orange, yellow, green, blue);
+  border-image-slice: 1;
+  padding: 10px;
+}
+
+.Content{
+  padding: 20px;
 }

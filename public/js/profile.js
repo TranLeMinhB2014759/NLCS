@@ -9,6 +9,7 @@ const expired1 = document.querySelector(".tab4");
 
 function active_profile() {
     profile.classList.add("active");
+    profile1.classList.add("animate__fadeIn");
     profile1.style.display = 'block';
 
     borrow.classList.remove("active");
@@ -26,6 +27,7 @@ function active_borrow() {
     profile1.style.display = 'none';
 
     borrow.classList.add("active");
+    borrow1.classList.add("animate__fadeIn");
     borrow1.style.display = 'block';
 
     giveback.classList.remove("active");
@@ -43,6 +45,7 @@ function active_giveback() {
     borrow1.style.display = 'none';
 
     giveback.classList.add("active");
+    giveback1.classList.add("animate__fadeIn");
     giveback1.style.display = 'block';
 
     expired.classList.remove("active");
@@ -60,5 +63,6 @@ function active_expired() {
     giveback1.style.display = 'none';
 
     expired.classList.add("active");
+    expired1.classList.add("animate__fadeIn");
     expired1.style.display = 'block';
 }
