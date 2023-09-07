@@ -280,7 +280,7 @@ label{
 }
 
 .child-container{
-  height: 700px;
+  min-height: 450px;
   max-width: 1200px;
   margin: auto;
   background-size: 100% 100%;
@@ -295,12 +295,53 @@ label{
 
 .search{
   max-width: 450px;
-  border: 3px solid;
+  /* border: 3px solid;
   border-image-source: conic-gradient(red, orange, yellow, green, blue);
   border-image-slice: 1;
-  padding: 10px;
+  padding: 10px; */
 }
 
 .Content{
-  padding: 20px;
+  padding: 10px;
+}
+
+.result-search{
+  padding: 8px;
+}
+
+.book{
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+}
+
+.book:hover{
+  box-shadow: 2px 2px 2px #AAA;
+}
+
+.book-tag{
+  padding: 10px;
+  background: #1e1efd;
+  color: white;
+  width: fit-content;
+  border-radius: 0 0 10px 10px;
+}
+
+.book img{
+  padding: 10px;
+  width: -webkit-fill-available;
+  height: 222px;
+  margin-bottom: 10px;
+}
+
+.book h4{
+  height: 40px;
+  font-family: monospace;
+  color: #333;
+  font-size: 18px;
+  text-align: center;
+}
+
+.book h6{
+  margin-left: 8px;
 }

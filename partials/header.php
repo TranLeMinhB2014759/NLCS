@@ -13,7 +13,7 @@
                 </button>
                 <div class="collapse navbar-collapse flex-row-reverse" id="collapsibleNavbar">
                     <ul class="navbar-nav">
-                        <li class="nav-item"><a class="nav-link" href="index.php">Look up documents</a></li>
+                        <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                         <?php if (!isset($_SESSION['user'])): ?>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>

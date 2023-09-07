@@ -1,10 +1,33 @@
 <?php
 session_start();
 include '../partials/db_connect.php';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $select_search = $_POST['select_search'];
-    $content_search = $_POST['content_search'];
+    $keyword = $_POST['keyword'];
+
+        if($select_search === 'book_name'){
+            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword ORDER BY book_id');
+            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
+        
+            $query->execute();
+            $results = $query->fetchAll();
+            $rows = $query->rowCount();
+        }elseif($select_search === 'book_author'){
+            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_author LIKE :keyword ORDER BY book_id');
+            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
+        
+            $query->execute();
+            $results = $query->fetchAll();
+            $rows = $query->rowCount();
+        }else{
+            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword OR book_author LIKE :keyword ORDER BY book_id');
+            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
+        
+            $query->execute();
+            $results = $query->fetchAll();
+            $rows = $query->rowCount();
+        // $query->bindParam(':select_search', $select_search);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -21,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" type="text/css" href="css/partials.css">
+    <!-- <link href="css/DataTables-1.13.6/css/datatables.min.css" rel="stylesheet"> -->
 </head>
 
 <body>
@@ -77,13 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="title text-center" style="font-size: 25px">Search Guide</div>
                         <div class="leftMenu">
                             <ul>
-                                <li style="font-weight:400"><b>Tìm nhanh:</b> Tìm trong Tên tài liệu, Tác giả, Năm xuất
-                                    bản, Từ khóa</li>
-                                <li style="font-weight:400"><b>Tìm đơn giản:</b> Tìm theo Loại tài liệu, Từ khóa, Tên
-                                    tài liệu, Tác giả, Năm xuất bản</li>
-                                <li style="font-weight:400"><b>Tìm nâng cao:</b> Tìm theo theo toán tử AND, OR, NOT</li>
-                                <li style="font-weight:400"><b>Tìm liên thư viện:</b> Tìm tài liệu ở thư viện liên kế
-                                </li>
+                                <li style="font-weight:400"><b>Tìm nhanh: </b>Từ khóa bất kì</li>
+                                <li style="font-weight:400"><b>Tìm tác giả: </b>Tên Tác giả</li>
+                                <li style="font-weight:400"><b>Tìm tên sách: </b>Tên sách</li>
                             </ul>
                         </div>
                     </div>
@@ -96,31 +116,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="child-container">
                                 <div class="form-search">
-                                    <form action="index.php" method="post">
+                                    <form method="POST">
                                         <div class="search input-group mb-3 mt-3">
                                             <select class="form-select" width="48" id="select_search" name="select_search">
                                                 <option value="*">Tìm nhanh</option>
-                                                <option value="nhande">Nhan đề</option>
-                                                <option value="tacgia">Tên tác giả</option>
+                                                <option value="book_name">Tên sách</option>
+                                                <option value="book_author">Tên tác giả</option>
                                             </select>
-                                            <input type="text" class="form-control" placeholder="Write Here..." id="content_search" name="content_search">
-                                            <button class="btn btn-primary" type="submit">Search <i class="fa-solid fa-magnifying-glass"></i></button>
+                                            <input type="text" class="form-control" placeholder="Write Here..." id="keyword" name="keyword">
+                                            <button class="btn btn-primary" type="submit" name="submit">Search <i class="fa-solid fa-magnifying-glass"></i></button>
                                         </div>
                                     </form>
                                 </div>
-                                <hr>
-                                <div class="Content"><b>Result:</b>
-                                <!-- ?php
-                                    $query = "SELECT * FROM quyensach WHERE tacgia = :select_search LIKE content_search;";
-                                    $ch = $db->query($query);
-                                    while ($row = $ch->fetch()) {
-                                        echo '<div id="book" class="col-sm-6 col-md-3 ">
-                                                <a href="book_detail.php?book_id=' . htmlspecialchars($row["book_id"]) . '"><img class="img-fluid img-product" src="' . htmlspecialchars($row["book_file_name"]) . '">
-                                                <h3>' . htmlspecialchars($row["book_name"]) . '</h3>
-                                            </div>';
+                                <?php
+                                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                                        if(!empty($keyword)){
+                                            echo '<div class="Content">
+                                                    <h5><b>Result:</b></h5> <h4>Có <b style="text-decoration: underline;">'. $rows .'</b> kết quả trùng khớp</h4>
+                                                  </div>';
+                                            echo '<div class="row result-search">';
+                                            if($rows != 0){
+                                                foreach($results as $r){
+                                                    echo '
+                                                        <div id="book" class="book col-sm-6 col-md-4 display d  ataTable">
+                                                            <a href="book_detail.php?book_id=' . htmlspecialchars($r["book_id"]) . '" title="Tác Phẩm: ' . htmlspecialchars($r["book_name"]) . '">
+                                                                <span class="book-tag" title="Mã số sách">'. htmlspecialchars($r["book_id"]) . '</span>
+                                                                <img class="book_img" src="uploads/' . htmlspecialchars($r["book_img"]) . '">
+                                                                <h4>' . htmlspecialchars($r["book_name"]) . '</h4>
+                                                                <div class="author">
+                                                                <h6><b>Tác giả: </b>' . htmlspecialchars($r["book_author"]) . '</h6>
+                                                                </div>
+                                                            </a>
+
+                                                        </div>';                                     
+                                                    }
+                                            }
+                                            echo'</div>';
+                                        }
                                     }
-                                ?> -->
-                                </div>
+                                ?>
                             </div>
 
                         </div>
@@ -132,9 +166,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     </div>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
-    <script src="js/partials.js"></script>
+    <!--===============================================================================================-->
+    <!-- <script src="js/DataTables-1.13.6/js/datatables.min.js"></script> -->
+
+    <!-- <script type="text/javascript">
+        $(document).ready(function(){
+            $('#book').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'serverMethod': 'post',
+                'ajax': {
+                    'url': 'book.php'
+                },
+                'columns': [
+                    {data: 'book_id'},
+                    {data: 'book_name'},
+                    {data: 'book_author'},
+                    {data: 'book_img'},
+                ]
+            });
+        });
+    </script> -->
 </body>
 <?php include '../partials/footer.php'; ?>
 
