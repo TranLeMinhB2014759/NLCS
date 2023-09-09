@@ -1,0 +1,110 @@
+a{
+    text-decoration: none;
+    color: white;
+}
+.book-detail-container{
+    padding: 50px;
+    background-color: white;
+}
+
+.img-book{
+    background-color: white;
+}
+
+h4{
+    font-family: roboto slab;
+}
+
+strong{
+    font-family: 'Arimo',sans-serif;;
+}
+
+.img-book img{
+    height: 350px;
+    width: 350px;
+    padding: 10px;
+}
+
+.info-book{
+    padding: 30px;
+    border: 1px solid;
+    background-image: url(../image/bg-ctu.png);
+    background-size: 100% 100%;
+    border-radius: 3px;
+}
+
+.same-book-author{
+    padding: 50px;
+    background-color: white;
+}
+
+
+.gallery{
+    display: flex;
+    justify-content: center;
+    background-color: var (--background);
+    gap: 16px;
+}
+.card{
+    position: relative;
+    left: 0;
+    width: 222px;
+    height: 250px;
+    background-color: var (--background);
+    border-radius: 8px;
+    transition: 1000ms all;
+    transform-origin: center left;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.5);
+    outline: 1px solid var (--background);
+    overflow: hidden;
+}
+.card img{
+    height: 250px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.card:hover{
+    cursor: pointer;
+    transform: scale(1.15);
+}
+.card:hover figcaption{
+    font-size: 1.2rem;
+    position: absolute;
+    height: fit-content;
+    width: 222px;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.9) 0%,
+        rgba(0,0,0,0) 100%,
+    );
+    color: white !important;
+    left: 0px;
+    bottom: 0px;
+    padding-left: 12px;
+    padding-bottom: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: bold;
+    background-color: rgba(71, 71, 71, 0.5);
+}
+.card:hover ~ .card{
+    font-weight: bold;
+    cursor: pointer;
+    transform: translateX(22px);
+}
+
+
+/* Responsive */
+@media screen and (max-width: 576px){ 
+    .img-book img{
+        height: 360px;
+        width: 400px;
+    }
+}
+@media screen and (max-width: 500px){ 
+    .img-book img{
+        height: 210px;
+        width: 245px;
+    }
+}
