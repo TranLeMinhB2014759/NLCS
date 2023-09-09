@@ -5,28 +5,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $select_search = $_POST['select_search'];
     $keyword = $_POST['keyword'];
 
-        if($select_search === 'book_name'){
-            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword ORDER BY book_id');
-            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
-        
-            $query->execute();
-            $results = $query->fetchAll();
-            $rows = $query->rowCount();
-        }elseif($select_search === 'book_author'){
-            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_author LIKE :keyword ORDER BY book_id');
-            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
-        
-            $query->execute();
-            $results = $query->fetchAll();
-            $rows = $query->rowCount();
-        }else{
-            $query = $db ->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword OR book_author LIKE :keyword ORDER BY book_id');
-            $query->bindValue(':keyword', '%'.$keyword.'%', PDO::PARAM_STR);
-        
-            $query->execute();
-            $results = $query->fetchAll();
-            $rows = $query->rowCount();
-        // $query->bindParam(':select_search', $select_search);
+    if($select_search === 'book_id'){
+        $query = $db->prepare('SELECT * FROM quyensach WHERE book_id = :keyword ORDER BY book_id');
+        $query->bindValue(':keyword', $keyword);
+
+        $query->execute();
+        $results = $query->fetchAll();
+        $rows = $query->rowCount();
+    }
+    elseif ($select_search === 'book_name') {
+        $query = $db->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword ORDER BY book_id');
+        $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
+
+        $query->execute();
+        $results = $query->fetchAll();
+        $rows = $query->rowCount();
+    } elseif ($select_search === 'book_author') {
+        $query = $db->prepare('SELECT * FROM quyensach WHERE book_author LIKE :keyword ORDER BY book_id');
+        $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
+
+        $query->execute();
+        $results = $query->fetchAll();
+        $rows = $query->rowCount();
+    } else {
+        $query = $db->prepare('SELECT * FROM quyensach WHERE book_id LIKE :keyword OR book_name LIKE :keyword OR book_author LIKE :keyword ORDER BY book_id');
+        $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
+
+        $query->execute();
+        $results = $query->fetchAll();
+        $rows = $query->rowCount();
     }
 }
 ?>
@@ -44,11 +51,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" type="text/css" href="css/partials.css">
+    <link rel="stylesheet" href="css/loader.css">
     <!-- <link href="css/DataTables-1.13.6/css/datatables.min.css" rel="stylesheet"> -->
 </head>
 
 <body>
-    <?php include '../partials/header.php'; ?>
+    <?php 
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        echo '<div id="loader-wrapper">
+            <div id="loader"></div>
+            <div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+        </div>';
+        }
+     include '../partials/header.php';
+     ?>
     <div class="container">
         <div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
@@ -64,8 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <img src="image/img1.png" alt="First slide" class="d-block w-100" height="350px">
                     <div class="carousel-caption d-none d-md-block animationSlide">
 
-                            <strong>Diverse book store</strong>
-                            <p>The more that you read, the more things you will know. The more that you learn, the more places you’ll go.</p>
+                        <strong>Diverse book store</strong>
+                        <p>The more that you read, the more things you will know. The more that you learn, the more
+                            places you’ll go.</p>
 
                     </div>
                 </div>
@@ -102,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="leftMenu">
                             <ul>
                                 <li style="font-weight:400"><b>Tìm nhanh: </b>Từ khóa bất kì</li>
+                                <li style="font-weight:400"><b>Tìm theo mã số: </b>Mã số sách</li>
                                 <li style="font-weight:400"><b>Tìm tác giả: </b>Tên Tác giả</li>
                                 <li style="font-weight:400"><b>Tìm tên sách: </b>Tên sách</li>
                             </ul>
@@ -109,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <div class="mainContent col-sm-9">
+                <div class="mainContent col-sm-9" id="notification">
                     <div class="group-box min-height">
                         <div class="title text-center">Notification</div>
                         <div class="main">
@@ -118,29 +137,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="form-search">
                                     <form method="POST">
                                         <div class="search input-group mb-3 mt-3">
-                                            <select class="form-select" width="48" id="select_search" name="select_search">
+                                            <select class="form-select" width="48" id="select_search"
+                                                name="select_search">
                                                 <option value="*">Tìm nhanh</option>
+                                                <option value="book_id">Mã số sách</option>
                                                 <option value="book_name">Tên sách</option>
                                                 <option value="book_author">Tên tác giả</option>
                                             </select>
-                                            <input type="text" class="form-control" placeholder="Write Here..." id="keyword" name="keyword">
-                                            <button class="btn btn-primary" type="submit" name="submit">Search <i class="fa-solid fa-magnifying-glass"></i></button>
+                                            <input type="text" class="form-control" placeholder="Write Here..."
+                                                id="keyword" name="keyword">
+                                            <button class="btn btn-primary" type="submit" name="submit">Search <i
+                                                    class="fa-solid fa-magnifying-glass"></i></button>
                                         </div>
                                     </form>
                                 </div>
                                 <?php
-                                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                                        if(!empty($keyword)){
-                                            echo '<div class="Content">
-                                                    <h5><b>Result:</b></h5> <h4>Có <b style="text-decoration: underline;">'. $rows .'</b> kết quả trùng khớp</h4>
+                                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                                    if (!empty($keyword)) {
+                                        echo '<div class="Content">
+                                                    <h5><b>Result:</b></h5> <h4>Có <b style="text-decoration: underline;">' . $rows . '</b> kết quả trùng khớp</h4>
                                                   </div>';
-                                            echo '<div class="row result-search">';
-                                            if($rows != 0){
-                                                foreach($results as $r){
-                                                    echo '
-                                                        <div id="book" class="book col-sm-6 col-md-4 display d  ataTable">
+                                        echo '<div class="row result-search">';
+                                        if ($rows != 0) {
+                                            foreach ($results as $r) {
+                                                echo '
+                                                        <div id="book" class="book col-sm-6 col-md-4 display">
                                                             <a href="book_detail.php?book_id=' . htmlspecialchars($r["book_id"]) . '" title="Tác Phẩm: ' . htmlspecialchars($r["book_name"]) . '">
-                                                                <span class="book-tag" title="Mã số sách">'. htmlspecialchars($r["book_id"]) . '</span>
+                                                                <span class="book-tag" title="Mã số sách">' . htmlspecialchars($r["book_id"]) . '</span>
                                                                 <img class="book_img" src="uploads/' . htmlspecialchars($r["book_img"]) . '">
                                                                 <h4>' . htmlspecialchars($r["book_name"]) . '</h4>
                                                                 <div class="author">
@@ -148,12 +171,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                                 </div>
                                                             </a>
 
-                                                        </div>';                                     
-                                                    }
+                                                        </div>';
                                             }
-                                            echo'</div>';
                                         }
+                                        echo '</div>';
+                                        echo '<script type="text/javascript" src="js/index.js"></script>';
                                     }
+                                }
                                 ?>
                             </div>
 
@@ -164,8 +188,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
-
-    </div>
+    <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
+    <!--===============================================================================================-->
+    <!-- <script type="text/javascript" src="js/index.js"></script> -->
+    <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
@@ -190,6 +216,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         });
     </script> -->
+    <!--===============================================================================================-->
+    <script>
+        // Button SrolltoTop
+            window.onscroll = function () { scrollFunction() };
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
+                    document.getElementById("myBtn").style.display = "block";
+                } else {
+                    document.getElementById("myBtn").style.display = "none";
+                }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction() {
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }
+    </script>
 </body>
 <?php include '../partials/footer.php'; ?>
 
