@@ -146,8 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             </select>
                                             <input type="text" class="form-control" placeholder="Write Here..."
                                                 id="keyword" name="keyword">
-                                            <button class="btn btn-primary" type="submit" name="submit">Search <i
-                                                    class="fa-solid fa-magnifying-glass"></i></button>
+                                            <button class="btn btn-primary" type="submit" name="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                                         </div>
                                     </form>
                                 </div>

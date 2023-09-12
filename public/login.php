@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     //Kiểm tra user
-    $stmt = $db->prepare('SELECT user_id, file_avatar, username, password, fullname, sdt, email, role FROM user WHERE username = :username');
+    $stmt = $db->prepare('SELECT * FROM user WHERE username = :username');
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user']['username'] = $user['username'];
             $_SESSION['user']['sdt'] = $user['sdt'];
             $_SESSION['user']['email'] = $user['email'];
+			$_SESSION['user']['class'] = $user['class'];
+			$_SESSION['user']['course'] = $user['course'];
             $_SESSION['user']['role'] = $user['role'];
             $_SESSION['user']['id'] = $user['user_id'];
             $_SESSION['user']['avatar'] = $user['file_avatar'];

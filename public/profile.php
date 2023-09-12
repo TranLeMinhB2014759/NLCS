@@ -33,7 +33,7 @@ include '../partials/check_user.php';
                         <ul>
                             <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a>
                             </li>
-                            <li id="tab2"><a href="#" onclick="active_borrow()">Sách đã mượn</a></li>
+                            <li id="tab2"><a href="#" onclick="active_borrow()">Phiếu mượn</a></li>
                             <li id="tab3"><a href="#" onclick="active_giveback()">Sách đã trả</a></li>
                             <li id="tab4"><a href="#" onclick="active_expired()">Sắp hết hạn</a></li>
                         </ul>
@@ -182,6 +182,24 @@ include '../partials/check_user.php';
                                 <label for="username" class="form-label">Username:</label>
                                 <?php echo $_SESSION['user']['username'] ?>
                             </div>
+                            <div>
+                                <label for="class" class="form-label">Class:</label>
+                                <?php if ($_SESSION['user']['class'] == 0) {
+                                    echo "Thông tin chưa được cập nhật";
+                                } else{
+                                    echo $_SESSION['user']['class'];
+                                }
+                                ?>
+                            </div>
+                            <div>
+                                <label for="course" class="form-label">Course:</label>
+                                <?php if ($_SESSION['user']['course'] == 0) {
+                                    echo "Thông tin chưa được cập nhật";
+                                } else {
+                                    echo $_SESSION['user']['course'];
+                                }
+                                ?>
+                            </div>
 
                             <!-- Số điện thoại -->
                             <div>
@@ -293,10 +311,34 @@ include '../partials/check_user.php';
                                         id="delete" title="Xóa tài khoản">Delete your Account?</a></div>
                             </div>
                         </div>
-                        <div class="tab2 text-center animate__animated" style="display:none">Không có thông tin</div>
+                                <?php 
+                                $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE username = :username');
+                                $query_pm->bindValue(':username', $_SESSION['user']['username']);
+                                $query_pm->execute();
+                                $results_pm = $query_pm->fetchAll();
+                                $rows = $query_pm->rowCount();
+                                if ($rows != 0) {
+                                    echo '<div class="tab2 animate__animated" style="display:none">
+                                            <div class="row">';
+                                    foreach ($results_pm as $r) {
+                                        echo '
+                                            <div class="col-12 col-md-6 phieumuon">
+                                                <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r["pm_stt"]) .'</h4>
+                                                <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r["tensach"]) .'</h4>
+                                                <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r["masach"]) .'</h4>
+                                                <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r["pm_ngaymuon"]) .'</h4>
+                                                <h4>'. "<b>Trạng thái: </b>" . htmlspecialchars($r["trangthai"]) .'</h4>
+                                            </div>';
+                                    }
+                                    echo'   </div>
+                                        </div>';
+                                }else{
+                                    echo '<div class="tab2 text-center animate__animated" style="display:none">Không có thông tin</div>';
+                                }
+                                ?>
+                        </div>
                         <div class="tab3 text-center animate__animated" style="display:none">Không có thông tin</div>
                         <div class="tab4 text-center animate__animated" style="display:none">Không có thông tin</div>
-
                     </div>
                 </div>
             </div>

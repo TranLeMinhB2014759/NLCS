@@ -115,3 +115,16 @@
 .active>a{
     color: white !important;
 }
+
+.phieumuon {
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 2px;
+    font-family: roboto slab;
+    margin-bottom: 15px;
+}
+
+.phieumuon .sophieu{
+    padding: 5px;
+    border-bottom: 1px solid;
+}
