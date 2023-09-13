@@ -71,13 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
         <div class="title">
             <br>
-            <h3><b>Change Password</b></h3>
             <a href="../">Home</a> /
             <a href="profile.php">Profile</a> /
             <a href="#"><b>Change password</b></a>
         </div>
+        <hr>
     </div>
-    </br>
     <div class="container-form">
         <ul class="list-group">
             <li class="list-group-item list-group-item-primary title-form"><b>Change Password</b></li>

@@ -196,25 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
     <!--===============================================================================================-->
     <!-- <script src="js/DataTables-1.13.6/js/datatables.min.js"></script> -->
-
-    <!-- <script type="text/javascript">
-        $(document).ready(function(){
-            $('#book').DataTable({
-                'processing': true,
-                'serverSide': true,
-                'serverMethod': 'post',
-                'ajax': {
-                    'url': 'book.php'
-                },
-                'columns': [
-                    {data: 'book_id'},
-                    {data: 'book_name'},
-                    {data: 'book_author'},
-                    {data: 'book_img'},
-                ]
-            });
-        });
-    </script> -->
     <!--===============================================================================================-->
     <script>
         // Button SrolltoTop

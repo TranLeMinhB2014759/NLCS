@@ -38,10 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $masach = $_POST['masach'];
     $tensach = $_POST['tensach'];
+    $currentDate = date('d/m/Y');
+    $book_return_date = date('d/m/Y', strtotime("+20 days"));
 
 	$stmt = $db->prepare('
-				INSERT INTO phieumuon (username, name, sdt, email, masach, tensach)
-				VALUES (:username, :name, :sdt, :email, :masach, :tensach)
+				INSERT INTO phieumuon (username, name, sdt, email, masach, tensach, pm_ngaymuon, pm_ngayhentra)
+				VALUES (:username, :name, :sdt, :email, :masach, :tensach, :pm_ngaymuon, :pm_ngayhentra)
 			    ');
 	$stmt->bindParam(':username', $username);
 	$stmt->bindParam(':name', $name);
@@ -49,6 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':masach', $masach);
     $stmt->bindParam(':tensach', $tensach);
+    $stmt->bindParam(':pm_ngaymuon', $currentDate);
+    $stmt->bindParam(':pm_ngayhentra', $book_return_date);
 
 	$stmt->execute();
     header("Location: " . $_SERVER['HTTP_REFERER']);

@@ -327,8 +327,20 @@ include '../partials/check_user.php';
                                                 <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r["tensach"]) .'</h4>
                                                 <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r["masach"]) .'</h4>
                                                 <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r["pm_ngaymuon"]) .'</h4>
-                                                <h4>'. "<b>Trạng thái: </b>" . htmlspecialchars($r["trangthai"]) .'</h4>
+                                                <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r["pm_ngayhentra"]) .'</h4>';
+                                        if($r["trangthai"] == 0){
+                                        echo '  
+                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:green">Đang mượn</span></h4>
                                             </div>';
+                                        } elseif ($r["trangthai"] == 1){
+                                        echo '  
+                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
+                                            </div>';
+                                        } else{
+                                        echo '  
+                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:red">Chờ xác nhận</span></h4>
+                                            </div>';
+                                        }
                                     }
                                     echo'   </div>
                                         </div>';
