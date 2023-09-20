@@ -15,16 +15,19 @@
             <div class="col-xs-6 col-md-3">
                 <h6>Quick Links</h6>
                 <ul class="footer-links">
-                    <li><a href=".">Look up documents</a></li>
                     <?php if (!isset($_SESSION['user'])): ?>
+                        <li><a href=".">Look up documents</a></li>
                         <li><a href="login.php">Login</a></li>
                         <li><a href="register.php">Sign Up</a></li>
                     <?php endif ?>
                     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
-                        <li><a href="manage_posts.php">Manage Posts</a></li>
-                        <li><a href="manage_accounts.php">Manage Accounts</a></li>
+                        <li><a href="manage_books.php">Manage Books</a></li>
+                        <li><a href="manage_users.php">Manage Users</a></li>
+                        <li><a href="manage_callcard.php">Manage Call Cards</a></li>
+                        <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>
                     <?php endif ?>
-                    <?php if (isset($_SESSION['user'])): ?>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
+                        <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                         <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>
                     <?php endif ?>
                 </ul>

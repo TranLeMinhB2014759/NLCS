@@ -13,16 +13,19 @@
                 </button>
                 <div class="collapse navbar-collapse flex-row-reverse" id="collapsibleNavbar">
                     <ul class="navbar-nav">
-                        <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                         <?php if (!isset($_SESSION['user'])): ?>
+                            <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>
                         <?php endif ?>
                         <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
-                            <li class="nav-item"><a class="nav-link" href="manage_posts.php">Manage Posts</a></li>
-                            <li class="nav-item"><a class="nav-link" href="manage_accounts.php">Manage Accounts</a></li>
+                            <li class="nav-item"><a class="nav-link" href="manage_books.php">Manage Books</a></li>
+                            <li class="nav-item"><a class="nav-link" href="manage_users.php">Manage Users</a></li>
+                            <li class="nav-item"><a class="nav-link" href="manage_callcard.php">Manage Call Cards</a></li>
+                            <li class="nav-item"><a class="nav-link" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user'])): ?>
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
+                            <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <!-- Dropdown -->
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" id="navbardrop" data-bs-toggle="dropdown">

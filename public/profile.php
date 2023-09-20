@@ -398,12 +398,13 @@ include '../partials/check_user.php';
         $(document).ready(function () {
             $("#signupForm1").validate({
                 rules: {
-                    sdt: { required: true, digits: true, minlength: 9 },
+                    sdt: { required: true, digits: true, minlength: 9, maxlength: 11},
                 },
                 messages: {
                     sdt: {
                         required: "Bạn chưa nhập vào số điện thoại",
                         digits: "Số điện thoại phải là một dãy số",
+                        minlength: "Số điện thoại không có thật",
                         minlength: "Số điện thoại phải tử 9 chữ số"
                     },
                 },

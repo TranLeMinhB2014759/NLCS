@@ -55,7 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':pm_ngayhentra', $book_return_date);
 
 	$stmt->execute();
-    header("Location: " . $_SERVER['HTTP_REFERER']);
+    echo '<script>
+        alert("Mượn sách thành công");
+    </script>';
+    // header("Location: " . $_SERVER['HTTP_REFERER']);
 }
 ?>
 <!DOCTYPE html>
@@ -120,10 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </a>
                             <?php endif ?>
                             <?php if (isset($_SESSION['user'])): ?>
-                                <?php if ($_SESSION['user']['sdt'] == 0 || $_SESSION['user']['email'] == 0): ?>
+                                <?php if ($_SESSION['user']['sdt'] == 0 && $_SESSION['user']['role'] != 1 || $_SESSION['user']['email'] == 0 && $_SESSION['user']['role'] != 1): ?>
                                     <h5 style="color: red;">Hãy cập nhật thông tin đầy đủ để có thể mượn sách!</h5>
                                 <?php endif ?>
-                                <?php if ($_SESSION['user']['sdt'] != 0 && $_SESSION['user']['email'] != 0): ?>
+                                <?php if ($_SESSION['user']['sdt'] != 0 && $_SESSION['user']['email'] != 0 && $_SESSION['user']['role'] != 1): ?>
                                 <button data-bs-toggle="modal" data-bs-target="#modal" title="Đăng kí mượn sách">
                                     Mượn Sách
                                     <div class="arrow-wrapper">
