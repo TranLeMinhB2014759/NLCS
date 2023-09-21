@@ -336,10 +336,14 @@ include '../partials/check_user.php';
                                         echo '  
                                                 <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
                                             </div>';
-                                        } else{
-                                        echo '  
-                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:red">Chờ xác nhận</span></h4>
-                                            </div>';
+                                        } elseif ($r["trangthai"] == 2){
+                                            echo '  
+                                                    <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:red">Đã hủy</span></h4>
+                                                </div>';
+                                        }else{
+                                            echo '  
+                                                    <h4 tyle="color:red"><b>Trạng thái: </b><span>Chờ xác nhận</span></h4>
+                                                </div>';
                                         }
                                     }
                                     echo'   </div>

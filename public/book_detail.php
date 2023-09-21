@@ -29,6 +29,7 @@ if (isset($_GET['book_id'])) {
 } else{
     header('location: ../');
 }
+$currentDate = date('d-m-Y');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -38,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $masach = $_POST['masach'];
     $tensach = $_POST['tensach'];
-    $currentDate = date('d/m/Y');
-    $book_return_date = date('d/m/Y', strtotime("+20 days"));
+    $book_return_date = date("d-m-Y", strtotime($_POST['book_return_date']));
 
 	$stmt = $db->prepare('
 				INSERT INTO phieumuon (username, name, sdt, email, masach, tensach, pm_ngaymuon, pm_ngayhentra)
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             </div>
                                             <!-- Modal body -->
                                             <div class="modal-body">
-                                                <form action="" id="signupForm" class="form-horizontal" method="POST">
+                                                <form action="" id="pm" class="form-horizontal" method="POST">
                                                 <div class="row">
                                                     <div class="col mb-3">
                                                         <label for="username" class="form-label">
@@ -194,6 +194,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         </label>
                                                         <input class="form-control" disabled value="<?php echo $row['book_name'] ?>"></input>
                                                         <input id="tensach" name="tensach" hidden value="<?php echo $row['book_name'] ?>"></input>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="mb-3 col-6">
+                                                        <label for="currentDate" class="form-label">
+                                                            Ngày mượn:
+                                                        </label>
+                                                        <input type="date" class="form-control" id="currentDate" name="currentDate" value="<?php echo $currentDate;?>" hidden></input>
+                                                        <input class="form-control" value="<?php echo $currentDate;?>" disabled></input>
+                                                    </div>
+                                                    <div class="mb-3 col-6">
+                                                        <label for="book_return_date" class="form-label">
+                                                            Ngày hẹn trả:
+                                                        </label>
+                                                        <input type="date" class="form-control" id="book_return_date" name="book_return_date"></input>
                                                     </div>
                                                 </div>
                                             </div>
@@ -249,6 +264,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="js/jquery.validate.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.validator.addMethod("dateAfterToday", function(value, element) {
+                var currentDate = new Date();
+                var inputDate = new Date(value);
+
+                return inputDate > currentDate;
+        }, "Ngày hẹn trả phải sau ngày hiện tại");
+
+        $("#pm").validate({
+            rules: {
+                book_return_date: {
+                    required: true,
+                    date: true,
+                    dateAfterToday: true
+                },
+            },
+            messages: {
+                book_return_date: {
+                required: "Vui lòng chọn ngày",
+                date: "Ngày không hợp lệ",
+                },
+            },
+            errorElement: "div",
+                errorPlacement: function (error, element) {
+                    error.addClass("invalid-feedback");
+                    error.insertAfter(element);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass("is-invalid").removeClass("is-valid");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).addClass("is-valid").removeClass("is-invalid");
+                },
+        });
+        });
+  </script>
+    <!-- QR CODE -->
     <script type="text/javascript" src="js/convert_en.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.js"></script>
     <script>

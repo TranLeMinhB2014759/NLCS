@@ -166,7 +166,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 );
             }
             ?>
-            <?php foreach ($data as $user): ?>
+            <?php 
+                array_shift($data);
+                foreach ($data as $user): ?>
                 <tr>
                     <td>
                         <?= $user['user_id'] ?>

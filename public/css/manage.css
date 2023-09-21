@@ -5,6 +5,12 @@
     position: relative;
     left: 10%;
 }
+
+#btn-modal-book{
+    position: relative;
+    left: 17%;
+}
+
 .container-m{
     display: flex;
     justify-content: center;
