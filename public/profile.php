@@ -31,11 +31,11 @@ include '../partials/check_user.php';
                     </div>
                     <div class="leftMenu">
                         <ul>
-                            <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a>
-                            </li>
-                            <li id="tab2"><a href="#" onclick="active_borrow()">Phiếu mượn</a></li>
-                            <li id="tab3"><a href="#" onclick="active_giveback()">Sách đã trả</a></li>
-                            <li id="tab4"><a href="#" onclick="active_expired()">Sắp hết hạn</a></li>
+                            <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a></li>
+                            <li id="tab2"><a href="#" onclick="active_waiting()">Chở xử lý</a></li>
+                            <li id="tab3"><a href="#" onclick="active_borrow()">Sách đang mượn</a></li>
+                            <li id="tab4"><a href="#" onclick="active_giveback()">Sách đã trả</a></li>
+                            <li id="tab5"><a href="#" onclick="active_expired()">Đã bị hủy</a></li>
                         </ul>
                     </div>
                 </div>
@@ -312,49 +312,111 @@ include '../partials/check_user.php';
                             </div>
                         </div>
                                 <?php 
-                                $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE username = :username');
-                                $query_pm->bindValue(':username', $_SESSION['user']['username']);
-                                $query_pm->execute();
-                                $results_pm = $query_pm->fetchAll();
-                                $rows = $query_pm->rowCount();
-                                if ($rows != 0) {
-                                    echo '<div class="tab2 animate__animated" style="display:none">
-                                            <div class="row">';
-                                    foreach ($results_pm as $r) {
-                                        echo '
-                                            <div class="col-12 col-md-6 phieumuon">
-                                                <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r["pm_stt"]) .'</h4>
-                                                <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r["tensach"]) .'</h4>
-                                                <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r["masach"]) .'</h4>
-                                                <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r["pm_ngaymuon"]) .'</h4>
-                                                <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r["pm_ngayhentra"]) .'</h4>';
-                                        if($r["trangthai"] == 0){
-                                        echo '  
-                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:green">Đang mượn</span></h4>
-                                            </div>';
-                                        } elseif ($r["trangthai"] == 1){
-                                        echo '  
-                                                <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
-                                            </div>';
-                                        } elseif ($r["trangthai"] == 2){
-                                            echo '  
-                                                    <h4 tyle="color:red"><b>Trạng thái: </b><span style="color:red">Đã hủy</span></h4>
-                                                </div>';
-                                        }else{
-                                            echo '  
-                                                    <h4 tyle="color:red"><b>Trạng thái: </b><span>Chờ xác nhận</span></h4>
+                                    $query_pm_w = $db->prepare('SELECT * FROM phieumuon WHERE username = :username AND trangthai=:trangthai');
+                                    $query_pm_w->bindValue(':username', $_SESSION['user']['username']);
+                                    $query_pm_w->bindValue(':trangthai', "");
+                                    $query_pm_w->execute();
+                                    $results_pm_w = $query_pm_w->fetchAll();
+                                    $rows_w = $query_pm_w->rowCount();
+                                    if ($rows_w != 0) {
+                                        echo '<div class="tab2 animate__animated" style="display:none">
+                                                <div class="row">';
+                                        foreach ($results_pm_w as $r_w) {
+                                            echo '
+                                                <div class="col-12 col-md-6 phieumuon">
+                                                    <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_w["pm_stt"]) .'</h4>
+                                                    <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_w["tensach"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_w["masach"]) .'</h4>
+                                                    <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_w["pm_ngaymuon"]) .'</h4>
+                                                    <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_w["pm_ngayhentra"]) .'</h4>
+                                                    <h4><b>Trạng thái: </b><span>Chờ xử lý</span></h4>
                                                 </div>';
                                         }
+                                        echo'   </div>
+                                            </div>';
+                                    }else{
+                                        echo '<div class="tab2 text-center animate__animated" style="display:none">Không có thông tin</div>';
                                     }
-                                    echo'   </div>
-                                        </div>';
-                                }else{
-                                    echo '<div class="tab2 text-center animate__animated" style="display:none">Không có thông tin</div>';
-                                }
+
+                                    $query_pm_b = $db->prepare('SELECT * FROM phieumuon WHERE username = :username AND trangthai=:trangthai');
+                                    $query_pm_b->bindValue(':username', $_SESSION['user']['username']);
+                                    $query_pm_b->bindValue(':trangthai', "0");
+                                    $query_pm_b->execute();
+                                    $results_pm_b = $query_pm_b->fetchAll();
+                                    $rows_b = $query_pm_b->rowCount();
+                                    if ($rows_b != 0) {
+                                        echo '<div class="tab3 animate__animated" style="display:none">
+                                                <div class="row">';
+                                        foreach ($results_pm_b as $r_b) {
+                                            echo '
+                                                <div class="col-12 col-md-6 phieumuon">
+                                                    <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_b["pm_stt"]) .'</h4>
+                                                    <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_b["tensach"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_b["masach"]) .'</h4>
+                                                    <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_b["pm_ngaymuon"]) .'</h4>
+                                                    <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_b["pm_ngayhentra"]) .'</h4>
+                                                    <h4><b>Trạng thái: </b><span style="color:green">Đang mượn</span></h4>
+                                                </div>';
+                                        }
+                                        echo'   </div>
+                                            </div>';
+                                    }else{
+                                        echo '<div class="tab3 text-center animate__animated" style="display:none">Không có thông tin</div>';
+                                    }
+
+                                    $query_pm_g = $db->prepare('SELECT * FROM phieumuon WHERE username = :username AND trangthai=:trangthai');
+                                    $query_pm_g->bindValue(':username', $_SESSION['user']['username']);
+                                    $query_pm_g->bindValue(':trangthai', "1");
+                                    $query_pm_g->execute();
+                                    $results_pm_g = $query_pm_g->fetchAll();
+                                    $rows_g = $query_pm_g->rowCount();
+                                    if ($rows_g != 0) {
+                                        echo '<div class="tab4 animate__animated" style="display:none">
+                                                <div class="row">';
+                                        foreach ($results_pm_g as $r_g) {
+                                            echo '
+                                                <div class="col-12 col-md-6 phieumuon">
+                                                    <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_g["pm_stt"]) .'</h4>
+                                                    <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_g["tensach"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_g["masach"]) .'</h4>
+                                                    <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_g["pm_ngaymuon"]) .'</h4>
+                                                    <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_g["pm_ngayhentra"]) .'</h4>
+                                                    <h4><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
+                                                </div>';
+                                        }
+                                        echo'   </div>
+                                            </div>';
+                                    }else{
+                                        echo '<div class="tab4 text-center animate__animated" style="display:none">Không có thông tin</div>';
+                                    }
+
+                                    $query_pm_c = $db->prepare('SELECT * FROM phieumuon WHERE username = :username AND trangthai=:trangthai');
+                                    $query_pm_c->bindValue(':username', $_SESSION['user']['username']);
+                                    $query_pm_c->bindValue(':trangthai', "2");
+                                    $query_pm_c->execute();
+                                    $results_pm_c = $query_pm_c->fetchAll();
+                                    $rows_c = $query_pm_c->rowCount();
+                                    if ($rows_c != 0) {
+                                        echo '<div class="tab5 animate__animated" style="display:none">
+                                                <div class="row">';
+                                        foreach ($results_pm_c as $r_c) {
+                                            echo '
+                                                <div class="col-12 col-md-6 phieumuon">
+                                                    <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_c["pm_stt"]) .'</h4>
+                                                    <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_c["tensach"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_c["masach"]) .'</h4>
+                                                    <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_c["pm_ngaymuon"]) .'</h4>
+                                                    <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_c["pm_ngayhentra"]) .'</h4>
+                                                    <h4><b>Trạng thái: </b><span style="color:red">Đã bị hủy</span></h4>
+                                                </div>';
+                                        }
+                                        echo'   </div>
+                                            </div>';
+                                    }else{
+                                        echo '<div class="tab5 text-center animate__animated" style="display:none">Không có thông tin</div>';
+                                    }
                                 ?>
-                        </div>
-                        <div class="tab3 text-center animate__animated" style="display:none">Không có thông tin</div>
-                        <div class="tab4 text-center animate__animated" style="display:none">Không có thông tin</div>
+                        
                     </div>
                 </div>
             </div>

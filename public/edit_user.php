@@ -12,22 +12,20 @@ if (isset($_POST['id'])) {
     $sdt = $_POST['u_sdt'];
     $email = $_POST['u_email'];
 
-    if (isset($_POST['btn-edit'])) {
-        $file = $_FILES['u_avatar'];
-        $allowType = ['image/png', 'image/jpeg', 'image/gif', 'image/tiff'];
-        if (!in_array($file['type'], $allowType)) {
-                die(header("Location: " . $_SERVER['HTTP_REFERER']));
+    if (empty($_FILES['u_avatar']['name'])) {
+        //Lưu ảnh vào floder avatar
+        $_FILES["u_avatar"]["name"] = $_POST['u_file_avatar'];
+    }else{
+        $target_dir = "avatar/";
+        $target_file = $target_dir . basename($_FILES["u_avatar"]["name"]);
+        if ($_POST['u_file_avatar'] == 'avatarUser.png') {
+            move_uploaded_file($_FILES["u_avatar"]["tmp_name"], $target_file);
+        } else {
+            unlink($target_dir . $_POST['u_file_avatar']);
+            move_uploaded_file($_FILES["u_avatar"]["tmp_name"], $target_file);
         }
     }
-    //Lưu ảnh vào floder avatar
-    $target_dir = "avatar/";
-    $target_file = $target_dir . basename($_FILES["u_avatar"]["name"]);
-    if ($_POST['u_file_avatar'] == 'avatarUser.png') {
-        move_uploaded_file($_FILES["u_avatar"]["tmp_name"], $target_file);
-    } else {
-        unlink($target_dir . $_POST['u_file_avatar']);
-        move_uploaded_file($_FILES["u_avatar"]["tmp_name"], $target_file);
-    }
+
 
     $query = 'UPDATE user SET username=?, fullname=?, password=?, class=?, course=?, sdt=?, email=?, file_avatar=? WHERE user_id=?';
     $stmt = $db->prepare($query);
@@ -113,7 +111,7 @@ if (isset($_POST['id'])) {
                 <img class='image image-after img-fluid rounded-circle'>
             </div>
             <br>
-            <input type='file' name='u_avatar' id='u_avatar' accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
+            <input type='file' name='u_avatar' id='u_avatar' accept='image/png, image/jpeg, image/gif, image/tiff'> <br>
             </div>
             <input type= 'hidden' name='u_file_avatar' value='" . $row['file_avatar'] . "'>
 
@@ -162,7 +160,6 @@ if (isset($_POST['id'])) {
                     u_course: { required: true, minlength: 3 },
                     u_sdt: { required: true, digits: true, minlength: 9 },
                     u_email: { required: true, minlength: 4, maxlength: 50 },
-                    u_avatar: {required: true}
                 },
                 messages: {
                     u_fullname: {
@@ -194,9 +191,6 @@ if (isset($_POST['id'])) {
                         minlength: "Số điện thoại phải tử 9 chữ số"
                     },
                     u_email: "Email không hợp lệ",
-                    u_avatar: {
-                        required: "Bạn chưa chọn file ảnh mới",
-                    },
                 },
 
                 errorElement: "div",

@@ -260,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     password: { required: true, minlength: 4, maxlength: 50 },
                     class: { required: true, maxlength: 8 },
                     course: { required: true, minlength: 3 },
-                    sdt: { required: true, digits: true, minlength: 9 },
+                    sdt: { required: true, digits: true, minlength: 9, maxlength: 10 },
                     email: { required: true, minlength: 4, maxlength: 50 },
                 },
                 messages: {
@@ -290,7 +290,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     sdt: {
                         required: "Bạn chưa nhập vào số điện thoại",
                         digits: "Số điện thoại phải là một dãy số",
-                        minlength: "Số điện thoại phải tử 9 chữ số"
+                        minlength: "Số điện thoại phải tử 9 chữ số",
+                        maxlength: "Số điện thoại tối đa 10 chữ số"
                     },
                     email: "Email không hợp lệ",
                 },

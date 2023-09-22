@@ -10,19 +10,16 @@ if (isset($_POST['id'])) {
     $b_year = $_POST['b_year'];
     $b_quantity = $_POST['b_quantity'];
 
-    if (isset($_POST['btn-edit'])) {
-        $file = $_FILES['b_img'];
-        $allowType = ['image/png', 'image/jpeg', 'image/gif', 'image/tiff'];
-        if (!in_array($file['type'], $allowType)) {
-                die(header("Location: " . $_SERVER['HTTP_REFERER']));
-        }
-    }
-    //Lưu ảnh vào floder avatar
-    $target_dir = "uploads/";
-    $target_file = $target_dir . basename($_FILES["b_img"]["name"]);
+    if (empty($_FILES['b_img']['name'])) {
+        //Lưu ảnh vào floder avatar
+        $_FILES["b_img"]["name"] = $_POST['b_file_uploads'];
+    }else{
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES["b_img"]["name"]);
 
-    unlink($target_dir . $_POST['b_file_uploads']);
-    move_uploaded_file($_FILES["b_img"]["tmp_name"], $target_file);
+        unlink($target_dir . $_POST['b_file_uploads']);
+        move_uploaded_file($_FILES["b_img"]["tmp_name"], $target_file);
+    }
 
     $query = 'UPDATE quyensach SET book_name=?, book_author=?, book_type=?, book_year=?, book_quantity=?, book_img=? WHERE book_id=?';
     $stmt = $db->prepare($query);
@@ -97,7 +94,7 @@ if (isset($_POST['id'])) {
                 <img class='image image-after img-fluid rounded-circle'>
             </div>
             <br>
-            <input type='file' name='b_img' id='b_img' accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
+            <input type='file' name='b_img' id='b_img' accept='image/png, image/jpeg, image/gif, image/tiff'> <br>
             </div>
             <input type= 'hidden' name='b_file_uploads' value='" . $row['book_img'] . "'>
 
@@ -144,7 +141,6 @@ if (isset($_POST['id'])) {
                     b_type: { required: true, minlength: 4, maxlength: 50 },
                     b_year: { required: true, digits: true, maxlength: 4 },
                     b_quantity: { required: true, digits: true},
-                    // b_img: {required: true}
                 },
                 messages: {
                     b_name: {
@@ -171,9 +167,6 @@ if (isset($_POST['id'])) {
                         required: "Hãy nhập vào số lượng",
                         digits: "Số lượng phải là một dãy số"
                     },
-                    // b_img: {
-                    //     required: "Hãy thêm hình"
-                    // },
                 },
 
                 errorElement: "div",
