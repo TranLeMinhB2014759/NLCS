@@ -21,7 +21,7 @@
                         <li><a href="register.php">Sign Up</a></li>
                     <?php endif ?>
                     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
-                        <li><a href="manage_books.php">Manage Books</a></li>
+                        <li><a href="manage_titles.php">Manage Titles</a></li>
                         <li><a href="manage_users.php">Manage Users</a></li>
                         <li><a href="manage_callcard.php">Manage Call Cards</a></li>
                         <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>

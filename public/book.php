@@ -1,69 +1,99 @@
 <?php
+session_start();
 include '../partials/db_connect.php';
+include '../partials/check_admin.php';
+if (isset($_GET['title_id'])) {
+    $_SESSION['title']['title_id'] = $_GET['title_id'];
 
-#Read Values
-$draw = $_POST['draw'];
-$row = $_POST['start'];
-$rowperpage = $_POST['length'];
-$columnIndex = $_POST['order'][0]['column'];
-$columnName = $_POST['columns']['columnIndex']['data'];
-$columnSortOrder = $_POST['order']['0']['dir'];
-$searchValue = $_POST['search']['value'];
-
-$searchArray = array();
-
-#Search
-$searchQuery = "";
-if($searchValue != ""){
-    $searchQuery = "AND (book_id LIKE :book_id OR book_name LIKE :book_name OR book_author LIKE :book_author)";
-    $searchArray = array(
-        'book_id' => "%$searchValue%",
-        'book_name' => "%$searchValue%",
-        'book_author' => "%$searchValue%",
-    );
+    $query_check_id = "SELECT title_id, title_name FROM dausach WHERE title_id = :giaTri";
+    $title_check_id = $db->prepare($query_check_id);
+    $title_check_id->bindParam(':giaTri', $_SESSION['title']['title_id'], PDO::PARAM_STR);
+    $title_check_id->execute();
+    if ($title_check_id->rowCount() > 0) {
+        //Quyen sach
+        $title = $title_check_id->fetch(PDO::FETCH_ASSOC);
+        $query_b = "SELECT * FROM quyensach WHERE title_id = :title_id";
+        $book = $db->prepare($query_b);
+        $book->bindParam(':title_id', $_GET['title_id']);
+        $book->execute();
+        $count_qs = $book->rowCount();
+        $data = [];
+        while ($row = $book->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = array(
+                'book_stt' => $row['book_stt'],
+                'book_status' => $row['book_status'],
+            );
+        }
+    } else {
+        echo '<script>
+        var confirmation = confirm("Mã sách bạn tìm không có trong cơ sở dữ liệu");
+        if (confirmation) {
+            window.location.href = "manage_titles.php";
+        }else{
+            window.location.href = "manage_titles.php";
+        }
+        </script>';
+    }
+}
+else{
+    header("Location: manage_titles.php");
 }
 
-# Total number of records wịthout filter
-$stmt = $db -> prepare("SELECT COUNT(*) AS allcount FROM quyensach");
-$stmt -> execute();
-$records = $stmt->fetch();
-$totalRecords = $records['allcount'];
 
-# Total number of records wịth filter
-$stmt = $db -> prepare("SELECT COUNT(*) AS allcount FROM quyensach WHERE 1".$searchQuery);
-$stmt -> execute($searchArray);
-$records = $stmt->fetch();
-$totalRecordswithFilter = $records['allcount'];
-
-# Fetch records
-$stmt = $db -> prepare("SELECT * FROM quyensach WHERE 1".$searchQuery."ORDER BY".$columnName." ".$columnSortOrder. "LIMIT :limit, offset");
-
-//Bind Value
-foreach($searchArray as $keyword => $search){
-    $stmt->bindValue(":".$keyword,$search, PDO::PARAM_STR);
-}
-$stmt->bindValue(":limit",(int)$row, PDO::PARAM_INT);
-$stmt->bindValue(":offset",(int)$rowperpage, PDO::PARAM_INT);
-$stmt->execute();
-
-$empRecords = $stmt->fetchAll();
-
-$data = array();
-foreach($empRecords as $row){
-    $data[] = array(
-        "book_id" => $row['book_id'],
-        "book_name" => $row['book_id'],
-        "book_author" => $row['book_id'],
-        "book_img" => $row['book_img'],
-    );
-}
-
-# Response
-$response = array(
-    "draw" =>intVal($draw),
-    "iTotalRecords" => ($totalRecord),
-    "iTotalDisplayRecords" => ($totalRecordswithFilter),
-    "aaData" =>$data,
-);
-echo json_encode($response)
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Libary</title>
+    <link rel="shortcut icon" href="image/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/partials.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <link rel="stylesheet" href="css/manage.css">
+</head>
+
+<body>
+<?php include '../partials/header.php'; ?>
+<div class="title-book">
+        <?= $title['title_name']?>
+</div>
+
+<?php echo '<div class="quantity">Tổng số sách hiện tại: ' . $count_qs . '</div>';?>
+
+<div class="container-m">
+        <table>
+            <tr>
+                <th>Mã số đầu sách</th>
+                <th>Mã số quyển sách</th>
+                <th>Trạng thái</th>
+            </tr>
+            <?php foreach ($data as $book): ?>
+                <tr>
+                    <td><?=$title['title_id']?></td>
+                    <td>
+                    <?= $book['book_stt'] ?>
+                    </td>
+                <?php if($book['book_status'] == '0'):?>
+                    <td>
+                        <span style="color: red">Đang mượn</span>
+                    </td>
+                <?php elseif($book['book_status'] == '1'):?>
+                    <td>
+                        <span style="color: green">Chưa mượn</span>
+                    </td>
+                <?php endif; ?>
+                <tr>
+            <?php endforeach; ?>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

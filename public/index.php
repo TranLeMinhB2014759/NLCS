@@ -5,30 +5,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $select_search = $_POST['select_search'];
     $keyword = $_POST['keyword'];
 
-    if($select_search === 'book_id'){
-        $query = $db->prepare('SELECT * FROM quyensach WHERE book_id = :keyword ORDER BY book_id');
+    if($select_search === 'title_id'){
+        $query = $db->prepare('SELECT * FROM dausach WHERE title_id = :keyword ORDER BY title_id');
         $query->bindValue(':keyword', $keyword);
 
         $query->execute();
         $results = $query->fetchAll();
         $rows = $query->rowCount();
     }
-    elseif ($select_search === 'book_name') {
-        $query = $db->prepare('SELECT * FROM quyensach WHERE book_name LIKE :keyword ORDER BY book_id');
+    elseif ($select_search === 'title_name') {
+        $query = $db->prepare('SELECT * FROM dausach WHERE title_name LIKE :keyword ORDER BY title_id');
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
 
         $query->execute();
         $results = $query->fetchAll();
         $rows = $query->rowCount();
-    } elseif ($select_search === 'book_author') {
-        $query = $db->prepare('SELECT * FROM quyensach WHERE book_author LIKE :keyword ORDER BY book_id');
+    } elseif ($select_search === 'title_author') {
+        $query = $db->prepare('SELECT * FROM dausach WHERE title_author LIKE :keyword ORDER BY title_id');
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
 
         $query->execute();
         $results = $query->fetchAll();
         $rows = $query->rowCount();
     } else {
-        $query = $db->prepare('SELECT * FROM quyensach WHERE book_id LIKE :keyword OR book_name LIKE :keyword OR book_author LIKE :keyword ORDER BY book_id');
+        $query = $db->prepare('SELECT * FROM dausach WHERE title_id LIKE :keyword OR title_name LIKE :keyword OR title_author LIKE :keyword ORDER BY title_id');
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
 
         $query->execute();
@@ -140,9 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <select class="form-select" width="48" id="select_search"
                                                 name="select_search">
                                                 <option value="*">Tìm nhanh</option>
-                                                <option value="book_id">Mã số sách</option>
-                                                <option value="book_name">Tên sách</option>
-                                                <option value="book_author">Tên tác giả</option>
+                                                <option value="title_id">Mã số sách</option>
+                                                <option value="title_name">Tên sách</option>
+                                                <option value="title_author">Tên tác giả</option>
                                             </select>
                                             <input type="text" class="form-control" placeholder="Write Here..."
                                                 id="keyword" name="keyword">
@@ -161,12 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             foreach ($results as $r) {
                                                 echo '
                                                         <div id="book" class="book col-sm-6 col-md-4 display">
-                                                            <a href="book_detail.php?book_id=' . htmlspecialchars($r["book_id"]) . '" title="Tác Phẩm: ' . htmlspecialchars($r["book_name"]) . '">
-                                                                <span class="book-tag" title="Mã số sách">' . htmlspecialchars($r["book_id"]) . '</span>
-                                                                <img class="book_img" src="uploads/' . htmlspecialchars($r["book_img"]) . '">
-                                                                <h4>' . htmlspecialchars($r["book_name"]) . '</h4>
+                                                            <a href="title_detail.php?title_id=' . htmlspecialchars($r["title_id"]) . '" title="Tác Phẩm: ' . htmlspecialchars($r["title_name"]) . '">
+                                                                <span class="book-tag" title="Mã số sách">' . htmlspecialchars($r["title_id"]) . '</span>
+                                                                <img class="book_img" src="uploads/' . htmlspecialchars($r["title_img"]) . '">
+                                                                <h4>' . htmlspecialchars($r["title_name"]) . '</h4>
                                                                 <div class="author">
-                                                                <h6><b>Tác giả: </b>' . htmlspecialchars($r["book_author"]) . '</h6>
+                                                                <h6><b>Tác giả: </b>' . htmlspecialchars($r["title_author"]) . '</h6>
                                                                 </div>
                                                             </a>
 

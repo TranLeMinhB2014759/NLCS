@@ -2,13 +2,18 @@
 session_start();
 include '../partials/db_connect.php';
 include '../partials/check_admin.php';
-if (isset($_GET['pm_stt'])) {
-    $query = 'UPDATE phieumuon SET trangthai=? WHERE pm_stt=?';
-    $stmt = $db->prepare($query);
-    $stmt->execute([
-        $_GET['trangthai'],
-        $_GET['pm_stt']
-    ]);
+if (isset($_POST['book_stt'])) {
+    $query_book = 'UPDATE quyensach SET book_status=:book_status WHERE book_stt=:book_stt';
+    $stmt_b = $db->prepare($query_book);
+    $stmt_b -> bindParam(':book_status', $_POST['book_status']);
+    $stmt_b -> bindParam(':book_stt', $_POST['book_stt']);
+    $stmt_b->execute();
+
+    $query_pm = 'UPDATE phieumuon SET trangthai=:trangthai WHERE pm_stt=:pm_stt';
+    $stmt_p = $db->prepare($query_pm);
+    $stmt_p -> bindParam(':trangthai', $_POST['trangthai']);
+    $stmt_p -> bindParam(':pm_stt', $_POST['pm_stt']);
+    $stmt_p->execute();
 }
 ?>
 
@@ -27,7 +32,6 @@ if (isset($_GET['pm_stt'])) {
     <link rel="stylesheet" href="css/partials.css">
     <link rel="stylesheet" href="css/loader.css">
     <link rel="stylesheet" href="css/manage.css">
-    <!-- <link href="css/DataTables-1.13.6/css/datatables.min.css" rel="stylesheet"> -->
 </head>
 
 <body>
@@ -39,29 +43,37 @@ if (isset($_GET['pm_stt'])) {
         <table>
             <tr>
                 <th>Số thứ tự</th>
-                <th>Tên người mượn</th>
-                <th>Số điện thoại</th>
-                <th>Email</th>
+                <th>Người mượn</th>
                 <th>Tên quyển sách</th>
+                <th>Tác giả</th>
                 <th>Ngày mượn</th>
                 <th>Ngày hẹn trả</th>
                 <th>Trạng thái</th>
-                <th></th>
+                <th>Hủy</th>
             </tr>
-            <?php $query = 'SELECT * FROM phieumuon;';
+            <?php $query = 'SELECT * FROM phieumuon pm 
+                            INNER join quyensach qs on pm.book_stt = qs.book_stt
+                            INNER join dausach ds on ds.title_id = qs.title_id
+                            INNER join user u on u.user_id = pm.user_id';
             $results = $db->query($query);
 
             $data = [];
             while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 $data[] = array(
                     'pm_stt' => $row['pm_stt'],
-                    'name' => $row['name'],
+                    'user_id' => $row['user_id'],
+                    'fullname' => $row['fullname'],
+                    'class' => $row['class'],
+                    'course' => $row['course'],
                     'sdt' => $row['sdt'],
                     'email' => $row['email'],
-                    'tensach' => $row['tensach'],
+                    'title_name' => $row['title_name'],
+                    'title_author' => $row['title_author'],
                     'pm_ngaymuon' => $row['pm_ngaymuon'],
                     'pm_ngayhentra' => $row['pm_ngayhentra'],
                     'trangthai' => $row['trangthai'],
+                    'book_stt' => $row['book_stt'],
+                    'book_status' => $row['book_status'],
                 );
             }
             ?>
@@ -71,16 +83,19 @@ if (isset($_GET['pm_stt'])) {
                         <?= $pm['pm_stt'] ?>
                     </td>
                     <td>
-                        <?= $pm['name'] ?>
+                        <a href="#" onclick="check_user('<?= $pm['user_id'] ?>',
+                                                        '<?= $pm['fullname'] ?>',
+                                                        '<?= $pm['class'] ?>',
+                                                        '<?= $pm['course'] ?>',
+                                                        '0<?= $pm['sdt'] ?>',
+                                                        '<?= $pm['email'] ?>',)"><?= $pm['fullname'] ?></a>
+                        
                     </td>
                     <td>
-                        0<?= $pm['sdt'] ?>
+                        <?= $pm['title_name'] ?>
                     </td>
                     <td>
-                        <?= $pm['email'] ?>
-                    </td>
-                    <td>
-                        <?= $pm['tensach'] ?>
+                        <?= $pm['title_author'] ?>
                     </td>
                     <td>
                         <?= $pm['pm_ngaymuon'] ?>
@@ -88,18 +103,40 @@ if (isset($_GET['pm_stt'])) {
                     <td>
                         <?= $pm['pm_ngayhentra'] ?>
                     </td>
-                    <?php if($pm['trangthai'] == ''):?>
-                        <td><a href="manage_callcard.php?pm_stt=<?= $pm['pm_stt'] ?>&trangthai=0" class='btn btn-primary' id='btn_confirm'>Xác nhận</a></td>
-                        <td><a href="manage_callcard.php?pm_stt=<?= $pm['pm_stt'] ?>&trangthai=2" class='btn btn-danger' id='btn_delete'>Hủy</a></td>
-                    <?php elseif($pm['trangthai'] == 0):?>
-                        <td><a href="manage_callcard.php?pm_stt=<?= $pm['pm_stt'] ?>&trangthai=1" class='btn btn-success'  id='btn_returned'>Trả sách</a></td>
-                        <td><a href="manage_callcard.php?pm_stt=<?= $pm['pm_stt'] ?>&trangthai=2" class='btn btn-danger' id='btn_delete'>Hủy</a></td>
+                    <?php if($pm['trangthai'] == 0):?>
+                        <td>
+                            <form action="manage_callcard.php" method="POST">
+                                <input  id="book_status" name="book_status" hidden value="0"></input>
+                                <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                <input  id="trangthai" name="trangthai" hidden value="1"></input>
+                                <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                <button type="submit" class="btn btn-primary">Xác nhận</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="manage_callcard.php" method="POST">
+                                <input  id="book_status" name="book_status" hidden value="1"></input>
+                                <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                <input  id="trangthai" name="trangthai" hidden value="3"></input>
+                                <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                <button type="submit" class="btn btn-danger">Hủy</button>
+                            </form>
+                        </td>
+
                     <?php elseif($pm['trangthai'] == 1):?>
-                        <td style="color: green">Đã trả</td>
-                        <td></td>
+                        <td colspan="2">
+                            <form action="manage_callcard.php" method="POST">
+                                <input  id="book_status" name="book_status" hidden value="1"></input>
+                                <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                <input  id="trangthai" name="trangthai" hidden value="2"></input>
+                                <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                <button type="submit" class="btn btn-success">Xác nhận trả</button>
+                            </form>
+                        </td>
                     <?php elseif($pm['trangthai'] == 2):?>
-                        <td style="color: red">Đã hủy</td>
-                        <td></td>
+                        <td colspan="2" style="color: green">Đã trả</td>
+                    <?php elseif($pm['trangthai'] == 3):?>
+                        <td colspan="2" style="color: red">Đã hủy</td>
                     <?php endif;?>
                 <tr>
                 <?php endforeach; ?>
@@ -139,8 +176,7 @@ if (isset($_GET['pm_stt'])) {
             }
             return false;
         });
-    </script>
-    <script>
+
         // Button SrolltoTop
         window.onscroll = function () { scrollFunction() };
 
@@ -156,6 +192,30 @@ if (isset($_GET['pm_stt'])) {
         function topFunction() {
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
+        }
+
+        //Xem thông tin người mượn
+            function check_user(value1, value2, value3, value4, value5, value6) {
+            var overlay = document.createElement("div");
+            overlay.classList.add("overlay");
+
+            var modal_user = document.createElement("div");
+            modal_user.classList.add("modal_user");
+            modal_user.innerHTML = "<div><h2>Thông tin</h2></div><p>" 
+                                    + "<div><strong>ID: " + value1 + "</strong></div>"
+                                    + "<div><strong>Họ tên: " + value2 + "</strong></div>"
+                                    + "<div><strong>Lớp: " + value3 + "</strong></div>"
+                                    + "<div><strong>Khóa: " + value4 + "</strong></div>"
+                                    + "<div><strong>Số điện thoại: " + value5 + "</strong></div>"
+                                    + "<div><strong>Email: " + value6 + "</strong></div>"
+                                    +"</p><button onclick='hideModal()'>Đóng</button>";
+            overlay.appendChild(modal_user);
+            document.body.appendChild(overlay);
+        }
+
+        function hideModal() {
+            var overlay = document.querySelector(".overlay");
+            overlay.parentNode.removeChild(overlay);
         }
     </script>
 </body>

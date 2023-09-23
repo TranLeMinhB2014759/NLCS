@@ -4,32 +4,32 @@ include '../partials/db_connect.php';
 include '../partials/check_admin.php';
 
 if (isset($_POST['id'])) {
-    $b_name = $_POST['b_name'];
-    $b_author = $_POST['b_author'];
-    $b_type = $_POST['b_type'];
-    $b_year = $_POST['b_year'];
-    $b_quantity = $_POST['b_quantity'];
+    $t_name = $_POST['t_name'];
+    $t_author = $_POST['t_author'];
+    $t_type = $_POST['t_type'];
+    $t_year = $_POST['t_year'];
+    $t_quantity = $_POST['t_quantity'];
 
-    if (empty($_FILES['b_img']['name'])) {
+    if (empty($_FILES['t_img']['name'])) {
         //Lưu ảnh vào floder avatar
-        $_FILES["b_img"]["name"] = $_POST['b_file_uploads'];
+        $_FILES["t_img"]["name"] = $_POST['t_file_uploads'];
     }else{
         $target_dir = "uploads/";
-        $target_file = $target_dir . basename($_FILES["b_img"]["name"]);
+        $target_file = $target_dir . basename($_FILES["t_img"]["name"]);
 
-        unlink($target_dir . $_POST['b_file_uploads']);
-        move_uploaded_file($_FILES["b_img"]["tmp_name"], $target_file);
+        unlink($target_dir . $_POST['t_file_uploads']);
+        move_uploaded_file($_FILES["t_img"]["tmp_name"], $target_file);
     }
 
-    $query = 'UPDATE quyensach SET book_name=?, book_author=?, book_type=?, book_year=?, book_quantity=?, book_img=? WHERE book_id=?';
+    $query = 'UPDATE dausach SET title_name=?, title_author=?, title_type=?, title_year=?, title_quantity=?, title_img=? WHERE title_id=?';
     $stmt = $db->prepare($query);
     $stmt->execute([
-        $_POST['b_name'],
-        $_POST['b_author'],
-        $_POST['b_type'],
-        $_POST['b_year'],
-        $_POST['b_quantity'],
-        $_FILES["b_img"]["name"],
+        $_POST['t_name'],
+        $_POST['t_author'],
+        $_POST['t_type'],
+        $_POST['t_year'],
+        $_POST['t_quantity'],
+        $_FILES["t_img"]["name"],
         $_POST['id']
     ]);
 
@@ -60,33 +60,33 @@ if (isset($_POST['id'])) {
                 <h2>Chỉnh sửa thông tin quyển sách</h2>
             </div>
             <?php if (isset($_GET['id'])) {
-                $query = "SELECT * FROM quyensach WHERE book_id={$_GET['id']}";
+                $query = "SELECT * FROM dausach WHERE title_id={$_GET['id']}";
                 $ch = $db->query($query);
                 $row = $ch->fetch();
-                echo "<form action='edit_book.php' method='post'id='edit' class='form-horizontal' enctype='multipart/form-data'>
+                echo "<form action='edit_title.php' method='post'id='edit' class='form-horizontal' enctype='multipart/form-data'>
             <div class='mb-3'>
-                <label for='b_name'><b>Tên quyển sách:</b></label>
-                <input class='form-control' id='b_name' name='b_name'
-                    value='" . $row["book_name"] . "'>
+                <label for='t_name'><b>Tên quyển sách:</b></label>
+                <input class='form-control' id='t_name' name='t_name'
+                    value='" . $row["title_name"] . "'>
             </div>
             <div class='mb-3 mt-3'>
-                <label for='b_author'><b>Tác giả:</b></label>
-                <input class='form-control' id='b_author' name='b_author' value='" . $row["book_author"] . "'>
+                <label for='t_author'><b>Tác giả:</b></label>
+                <input class='form-control' id='t_author' name='t_author' value='" . $row["title_author"] . "'>
             </div>
             <div class='mb-3 mt-3'>
-                <label for='b_type'><b>Thể loại:</b></label>
-                <input class='form-control' id='b_type' name='b_type' value='" . $row["book_type"] ."'>
+                <label for='t_type'><b>Thể loại:</b></label>
+                <input class='form-control' id='t_type' name='t_type' value='" . $row["title_type"] ."'>
             </div>
             <div class='row'>
                 <div class='mb-3 col-6'>
-                    <label for='b_year'><b>Xuất bản:</b></label>
-                    <input type='text' class='form-control' id='b_year' name='b_year'
-                        value='" . $row["book_year"] . "'>
+                    <label for='t_year'><b>Xuất bản:</b></label>
+                    <input type='text' class='form-control' id='t_year' name='t_year'
+                        value='" . $row["title_year"] . "'>
                 </div>
                 <div class='mb-3 col-6'>
-                    <label for='b_quantity'><b>Số lượng:</b></label>
-                    <input type='text' class='form-control' id='b_quantity' name='b_quantity'
-                        value='" . $row["book_quantity"] . "'>
+                    <label for='t_quantity'><b>Số lượng:</b></label>
+                    <input type='text' class='form-control' id='t_quantity' name='t_quantity'
+                        value='" . $row["title_quantity"] . "'>
                 </div>
             </div>
             <div class='mb-3 mt-3'>
@@ -94,9 +94,9 @@ if (isset($_POST['id'])) {
                 <img class='image image-after img-fluid rounded-circle'>
             </div>
             <br>
-            <input type='file' name='b_img' id='b_img' accept='image/png, image/jpeg, image/gif, image/tiff'> <br>
+            <input type='file' name='t_img' id='t_img' accept='image/png, image/jpeg, image/gif, image/tiff'> <br>
             </div>
-            <input type= 'hidden' name='b_file_uploads' value='" . $row['book_img'] . "'>
+            <input type= 'hidden' name='t_file_uploads' value='" . $row['title_img'] . "'>
 
             <input type= 'hidden' name='id' value='" . $_GET['id'] . "'>
             <div class='row'>
@@ -104,7 +104,7 @@ if (isset($_POST['id'])) {
                     <button type='submit' class='btn btn-primary' name='btn-edit'>Sửa</button>
                 </div>
                 <div class='col-3'>
-                    <a href='manage_books.php' class='btn btn-info'> Quay lại</a>
+                    <a href='manage_titles.php' class='btn btn-info'> Quay lại</a>
                 </div>
                 <div class='col-7'>
                 </div>
@@ -117,7 +117,7 @@ if (isset($_POST['id'])) {
                 <div class='success'>
                     <div class='text-center'><h2>Đã sửa thành công</h2></div>
                     <div class='back'>
-                        <a href='manage_books.php' class='btn btn-info'> Quay lại</a>
+                        <a href='manage_titles.php' class='btn btn-info'> Quay lại</a>
                     </div>
                 </div>
                 ";
@@ -136,34 +136,34 @@ if (isset($_POST['id'])) {
         $(document).ready(function () {
             $("#edit").validate({
                 rules: {
-                    b_name: { required: true, minlength: 4, maxlength: 50 },
-                    b_author: { required: true, minlength: 4, maxlength: 50 },
-                    b_type: { required: true, minlength: 4, maxlength: 50 },
-                    b_year: { required: true, digits: true, maxlength: 4 },
-                    b_quantity: { required: true, digits: true},
+                    t_name: { required: true, minlength: 4, maxlength: 50 },
+                    t_author: { required: true, minlength: 4, maxlength: 50 },
+                    t_type: { required: true, minlength: 4, maxlength: 50 },
+                    t_year: { required: true, digits: true, maxlength: 4 },
+                    t_quantity: { required: true, digits: true},
                 },
                 messages: {
-                    b_name: {
+                    t_name: {
                         required: "Tên quyển sách không được để trống",
                         minlength: "Tên quyển sách quá ngắn",
                         maxlength: "Tên quyển sách quá dài"
                     },
-                    b_author: {
+                    t_author: {
                         required: "Tên tác giả không được để trống",
                         minlength: "Tên tác giả quá ngắn",
                         maxlength: "Tên tác giả quá dài"
                     },
-                    b_type: {
+                    t_type: {
                         required: "Tên thể loại không được để trống",
                         minlength: "Tên thể loại quá ngắn",
                         maxlength: "Tên thể loại quá dài"
                     },
-                    b_year: {
+                    t_year: {
                         required: "Năm xuất bản không được để trống",
                         digits: "Năm xuất bản phải là một dãy số",
                         maxlength: "Năm xuất bản không có thật"
                     },
-                    b_quantity: {
+                    t_quantity: {
                         required: "Hãy nhập vào số lượng",
                         digits: "Số lượng phải là một dãy số"
                     },
@@ -185,7 +185,7 @@ if (isset($_POST['id'])) {
     </script>
     <script>
         const image =document.querySelector(".image-after")
-        const input=document.querySelector("#b_img")
+        const input=document.querySelector("#t_img")
         input.addEventListener("change", () =>{
             image.src=URL.createObjectURL(input.files[0])
         })

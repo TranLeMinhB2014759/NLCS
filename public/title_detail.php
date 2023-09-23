@@ -2,20 +2,20 @@
 session_start();
 include '../partials/db_connect.php';
 
-//Kiểm tra xem book_id có tồn tài hay không
-if (isset($_GET['book_id'])) {
-    $_SESSION['book']['book_id'] = $_GET['book_id'];
+//Kiểm tra xem title_id có tồn tài hay không
+if (isset($_GET['title_id'])) {
+    $_SESSION['title']['title_id'] = $_GET['title_id'];
 
-    $query_check_id = "SELECT book_id FROM quyensach WHERE book_id = :giaTri";
-    $book_check_id = $db->prepare($query_check_id);
-    $book_check_id->bindParam(':giaTri', $_SESSION['book']['book_id'], PDO::PARAM_STR);
-    $book_check_id->execute();
+    $query_check_id = "SELECT title_id FROM dausach WHERE title_id = :giaTri";
+    $title_check_id = $db->prepare($query_check_id);
+    $title_check_id->bindParam(':giaTri', $_SESSION['title']['title_id'], PDO::PARAM_STR);
+    $title_check_id->execute();
     
-    //Nếu có book_id thì lấy dữ liệu
-    if($book_check_id->rowCount() > 0 ){
-        $query_book = "SELECT * FROM quyensach WHERE book_id={$_SESSION['book']['book_id']}";
-        $book = $db->query($query_book);
-        $row = $book->fetch();
+    //Nếu có title_id thì lấy dữ liệu
+    if($title_check_id->rowCount() > 0 ){
+        $query_title = "SELECT * FROM dausach WHERE title_id={$_SESSION['title']['title_id']}";
+        $title = $db->query($query_title);
+        $row = $title->fetch();
     } else {
         echo '<script>
         var confirmation = confirm("Mã sách bạn tìm không có trong cơ sở dữ liệu");
@@ -29,37 +29,58 @@ if (isset($_GET['book_id'])) {
 } else{
     header('location: ../');
 }
+
+// Lấy book_stt
+$query_b = "SELECT * FROM quyensach WHERE title_id = :title_id";
+$book = $db->prepare($query_b);
+$book->bindParam(':title_id', $_SESSION['title']['title_id']);
+$book->execute();
+
+$data = [];
+while ($row_stt = $book->fetch(PDO::FETCH_ASSOC)) {
+    $data[] = array(
+        'book_stt' => $row_stt['book_stt'],
+        'book_status' => $row_stt['book_status'],
+        'title_id' => $row_stt['title_id'],
+    );
+}
+
+//Mượn sách
 $currentDate = date('d-m-Y');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-	$username = $_POST['username'];
-	$name = $_POST['name'];
-	$sdt = $_POST['sdt'];
-    $email = $_POST['email'];
-    $masach = $_POST['masach'];
-    $tensach = $_POST['tensach'];
+	$user_id = $_POST['user_id'];
+    $title_id = $_POST['title_id'];
+    $book_stt = $_POST['book_stt'];
     $book_return_date = date("d-m-Y", strtotime($_POST['book_return_date']));
 
 	$stmt = $db->prepare('
-				INSERT INTO phieumuon (username, name, sdt, email, masach, tensach, pm_ngaymuon, pm_ngayhentra)
-				VALUES (:username, :name, :sdt, :email, :masach, :tensach, :pm_ngaymuon, :pm_ngayhentra)
+				INSERT INTO phieumuon (user_id, title_id, book_stt, pm_ngaymuon, pm_ngayhentra, trangthai)
+				VALUES (:user_id, :title_id, :book_stt, :pm_ngaymuon, :pm_ngayhentra, :trangthai)
 			    ');
-	$stmt->bindParam(':username', $username);
-	$stmt->bindParam(':name', $name);
-	$stmt->bindParam(':sdt', $sdt);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':masach', $masach);
-    $stmt->bindParam(':tensach', $tensach);
+	$stmt->bindParam(':user_id', $user_id);
+    $stmt->bindParam(':title_id', $title_id);
+    $stmt->bindParam(':book_stt', $book_stt);
     $stmt->bindParam(':pm_ngaymuon', $currentDate);
     $stmt->bindParam(':pm_ngayhentra', $book_return_date);
+    $stmt->bindValue(':trangthai', "");
 
 	$stmt->execute();
     echo '<script>
         alert("Mượn sách thành công");
     </script>';
-    // header("Location: " . $_SERVER['HTTP_REFERER']);
+    header("Location: " . $_SERVER['HTTP_REFERER']);
+
+    $query_update = 'UPDATE quyensach SET book_status=? WHERE book_stt=? AND title_id=?';
+    $stmt_update = $db->prepare($query_update);
+    $stmt_update->execute([
+        0,
+        $_POST['book_stt'],
+        $_POST['title_id'],
+    ]);
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>
-        <?php echo htmlspecialchars($row['book_name']) ?> - Libary
+        <?php echo htmlspecialchars($row['title_name']) ?> - Libary
     </title>
     <link rel="shortcut icon" href="image/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -92,26 +113,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h3><strong>TỔNG QUAN</strong></h3>
             <div class="book-detail row">
                 <div class="img-book col-md-5 col-sm-12">
-                    <?php echo '<img src="uploads/' . htmlspecialchars($row['book_img']) . '" alt="">'; ?>
+                    <?php echo '<img src="uploads/' . htmlspecialchars($row['title_img']) . '" alt="">'; ?>
                 </div>
                 <div class="info-book col-md-7 col-sm-12">
                     <div class="row">
                         <div class="col-md-9">
                             <strong>
-                                <?php echo '' . htmlspecialchars($row['book_name']) . ''; ?>
+                                <?php echo '' . htmlspecialchars($row['title_name']) . ''; ?>
                             </strong>
                             <br>
                             <h4>
-                                <?php echo '<b>Mã số sách: </b>' . htmlspecialchars($row['book_id']) . ''; ?>
+                                <?php echo '<b>Mã số sách: </b>' . htmlspecialchars($row['title_id']) . ''; ?>
                             </h4>
                             <h4>
-                                <?php echo '<b>Tác giả: </b>' . htmlspecialchars($row['book_author']) . ''; ?>
+                                <?php echo '<b>Tác giả: </b>' . htmlspecialchars($row['title_author']) . ''; ?>
                             </h4>
                             <h4>
-                                <?php echo '<b>Thể loại: </b>' . htmlspecialchars($row['book_type']) . ''; ?>
+                                <?php echo '<b>Thể loại: </b>' . htmlspecialchars($row['title_type']) . ''; ?>
                             </h4>
                             <h4>
-                                <?php echo '<b>Xuất bản năm: </b>' . htmlspecialchars($row['book_year']) . ''; ?>
+                                <?php echo '<b>Xuất bản năm: </b>' . htmlspecialchars($row['title_year']) . ''; ?>
                             </h4>
                             <?php if (!isset($_SESSION['user'])): ?>
                                 <a id="button" href="login.php">
@@ -148,54 +169,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <!-- Modal body -->
                                             <div class="modal-body">
                                                 <form action="" id="pm" class="form-horizontal" method="POST">
-                                                <div class="row">
-                                                    <div class="col mb-3">
-                                                        <label for="username" class="form-label">
-                                                            Username: 
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo $_SESSION['user']['username'] ?>"></input>
-                                                        <input  id="username" name="username" hidden value="<?php echo $_SESSION['user']['username'] ?>"></input>
-                                                    </div>
-                                                    <div class="col mb-3">
-                                                        <label for="name" class="form-label">
-                                                            First and last name:
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo $_SESSION['user']['name'] ?>"></input>
-                                                        <input  id="name" name="name" hidden value="<?php echo $_SESSION['user']['name'] ?>"></input>
-                                                    </div>
+
+                                                <div class="mb-3 mt-3">
+                                                    <label for="user_id" class="form-label">
+                                                        User_ID:
+                                                    </label>
+                                                    <input class="form-control" disabled value="<?php echo $_SESSION['user']['id'] ?>"></input>
+                                                    <input  id="user_id" name="user_id" hidden value="<?php echo $_SESSION['user']['id'] ?>"></input>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-8 mb-3">
-                                                        <label for="name" class="form-label">
-                                                            Email:
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo $_SESSION['user']['email'] ?>"></input>
-                                                        <input id="email" name="email" hidden value="<?php echo $_SESSION['user']['email'] ?>"></input>
-                                                    </div>
-                                                    <div class="col-4 mb-3">
-                                                        <label for="sdt" class="form-label">
-                                                            Phone Number:
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo "0" . $_SESSION['user']['sdt'] ?>"></input>
-                                                        <input id="sdt" name="sdt" hidden value="<?php echo "0" . $_SESSION['user']['sdt'] ?>"></input>
-                                                    </div>
+
+                                                <div class="mb-3">
+                                                    <label for="book_stt" class="form-label">
+                                                        Mã số sách
+                                                    </label>
+
+                                                    <select class="form-select" name="book_stt" id="book_stt" required>
+                                                        <option value="">------- Chọn mã số sách -------</option>
+                                                        <?php foreach ($data as $book): ?>
+                                                            <?php if($book['book_status'] == "1") :?>
+                                                                <option value="<?= $book['book_stt']?>"><?= $_SESSION['title']['title_id'].$book['book_stt']?></option>
+                                                            <?php else:?>
+                                                                <option value="">Không còn sách tại thư viện</option>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                        <input id="title_id" name="title_id" hidden value="<?= $_SESSION['title']['title_id']?>"></input>
+                                                    </select>
+
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-3 mb-3">
-                                                        <label for="sdt" class="form-label">
-                                                            Mã sách:
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo $_SESSION['book']['book_id'] ?>"></input>
-                                                        <input id="masach" name="masach" hidden value="<?php echo $_SESSION['book']['book_id'] ?>"></input>
-                                                    </div>
-                                                    <div class="col-8 mb-3">
-                                                        <label for="sdt" class="form-label">
-                                                            Tên sách:
-                                                        </label>
-                                                        <input class="form-control" disabled value="<?php echo $row['book_name'] ?>"></input>
-                                                        <input id="tensach" name="tensach" hidden value="<?php echo $row['book_name'] ?>"></input>
-                                                    </div>
-                                                </div>
+
                                                 <div class="row">
                                                     <div class="mb-3 col-6">
                                                         <label for="currentDate" class="form-label">
@@ -241,17 +242,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h3><strong>MỚI NHẤT</strong></h3>
             <?php 
             echo '<div id="book" class="gallery">';
-            $query_book_author = "SELECT * FROM quyensach ORDER BY book_id DESC LIMIT 4";
-            $book_author = $db->query($query_book_author);
+            $query_title_author = "SELECT * FROM dausach ORDER BY title_id DESC LIMIT 4";
+            $title_author = $db->query($query_title_author);
 
-            while ($rows = $book_author->fetch())  {
+            while ($rows = $title_author->fetch())  {
                 echo '  <div class="card">
-                            <a href="book_detail.php?book_id=' . htmlspecialchars($rows["book_id"]) . '">
+                            <a href="title_detail.php?title_id=' . htmlspecialchars($rows["title_id"]) . '">
                                 <figure>
-                                    <img class="book_img img-fluid" src="uploads/' . htmlspecialchars($rows["book_img"]) . '">
+                                    <img class="book_img img-fluid" src="uploads/' . htmlspecialchars($rows["title_img"]) . '">
                                 <figure>
                                 <figcaption>
-                                    ' . htmlspecialchars($rows["book_name"]) . '
+                                    ' . htmlspecialchars($rows["title_name"]) . '
                                 <figcaption>
                             </a>
                         </div>';
@@ -308,11 +309,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script>
         var qrcode = new QRCode(document.getElementById("qrcode"), {
             text: convert("<?php
-            echo htmlspecialchars($row['book_name']) . '\n' .
-                'Mã Số Sách: ' . htmlspecialchars($row['book_id']) . '\n' .
-                'Tác giả: ' . htmlspecialchars($row['book_author']) . '\n' .
-                'Thể loại: ' . htmlspecialchars($row['book_type']) . '\n' .
-                'Xuất bản năm: ' . htmlspecialchars($row['book_year']) . '';
+            echo htmlspecialchars($row['title_name']) . '\n' .
+                'Mã Số Sách: ' . htmlspecialchars($row['title_id']) . '\n' .
+                'Tác giả: ' . htmlspecialchars($row['title_author']) . '\n' .
+                'Thể loại: ' . htmlspecialchars($row['title_type']) . '\n' .
+                'Xuất bản năm: ' . htmlspecialchars($row['title_year']) . '';
             ?>"),
             width: 100,
             height: 100,
