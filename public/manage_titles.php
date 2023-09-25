@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title_author = $_POST['title_author'];
     $title_type = $_POST['title_type'];
     $title_year = $_POST['title_year'];
-    $title_quantity = $_POST['title_quantity'];
 
     $file = $_FILES['title_img'];
         $allowType = ['image/png', 'image/jpeg', 'image/gif', 'image/tiff'];
@@ -21,34 +20,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         move_uploaded_file($_FILES["title_img"]["tmp_name"], $target_file);
 
         $stmt = $db->prepare('
-                INSERT INTO dausach (title_name, title_author, title_type, title_year, title_quantity, title_img)
-                VALUES (:title_name, :title_author, :title_type, :title_year, :title_quantity, :title_img)
+                INSERT INTO dausach (title_name, title_author, title_type, title_year, title_img)
+                VALUES (:title_name, :title_author, :title_type, :title_year, :title_img)
                 ');
         $stmt->bindParam(':title_name', $title_name);
         $stmt->bindParam(':title_author', $title_author);
         $stmt->bindParam(':title_type', $title_type);
         $stmt->bindParam(':title_year', $title_year);
-        $stmt->bindParam(':title_quantity', $title_quantity);
         $stmt->bindParam(':title_img', $_FILES['title_img']["name"]);
         $stmt->execute();
         header("Location: " . $_SERVER['HTTP_REFERER']);
     }
-//Đầu sách
-$query = 'SELECT * FROM dausach;';
-$results = $db->query($query);
 
-$data = [];
-while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-    $data[] = array(
-        'title_id' => $row['title_id'],
-        'title_name' => $row['title_name'],
-        'title_author' => $row['title_author'],
-        'title_type' => $row['title_type'],
-        'title_year' => $row['title_year'],
-        'title_img' => $row['title_img'],
-        'title_quantity' => $row['title_quantity'],
-    );
-}
+// Lấy số lượng bản ghi trong cơ sở dữ liệu
+$query_page = "SELECT COUNT(*) as total FROM dausach";
+$result = $db->query($query_page);
+$row_page = $result->fetch(PDO::FETCH_ASSOC);
+$totalRecords = $row_page['total'];
+
+// Số bản ghi hiển thị trên mỗi trang
+$recordsPerPage = 5;
+
+// Tính toán số trang
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+// Xác định trang hiện tại và kiểm tra giá trị
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, min($_GET['page'], $totalPages)) : 1;
+
+// Xác định phạm vi hiển thị các trang
+$range = 5; // Số trang hiển thị
+
+$startRange = max(1, $currentPage - floor($range / 2));
+$endRange = min($totalPages, $startRange + $range - 1);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
+$query_s_e = "SELECT * FROM dausach LIMIT $startFrom, $recordsPerPage";
+$result = $db->query($query_s_e);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
 ?>
 
 <!DOCTYPE html>
@@ -107,15 +116,9 @@ while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                                         placeholder="Enter the title type">
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="mb-3 col-6">
-                                    <label for="title_year" class="form-label"><b>Xuất bản:</b></label>
-                                    <input class="form-control" id="title_year" name="title_year" placeholder="Enter the year">
-                                </div>
-                                <div class="mb-3 col-6">
-                                    <label for="title_quantity" class="form-label"><b>Số lượng:</b></label>
-                                    <input class="form-control" id="title_quantity" name="title_quantity" placeholder="Enter quantity">
-                                </div>
+                            <div class="mb-3 col-6">
+                                <label for="title_year" class="form-label"><b>Xuất bản:</b></label>
+                                <input class="form-control" id="title_year" name="title_year" placeholder="Enter the year">
                             </div>
                             <div class="mb-3 mt-3">
                                 <input type='file' name='title_img' id='title_img' accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
@@ -152,6 +155,23 @@ while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                 <th>Sửa</th>
                 <th>Xóa</th>
             </tr>
+            
+            <?php //Đầu sách
+                $query = "SELECT * FROM dausach LIMIT $startFrom, $recordsPerPage";
+                $results = $db->query($query);
+
+                $data = [];
+                while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                    $data[] = array(
+                        'title_id' => $row['title_id'],
+                        'title_name' => $row['title_name'],
+                        'title_author' => $row['title_author'],
+                        'title_type' => $row['title_type'],
+                        'title_year' => $row['title_year'],
+                        'title_img' => $row['title_img'],
+                    );
+                }
+                ?>
             <?php foreach ($data as $title): ?>
                 <tr>
                     <td>
@@ -176,10 +196,38 @@ while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                         <a href="delete_title.php?id=<?= $title['title_id'] ?>" class='btn btn-danger' id='btn_delete'>Delete</a>
                     </td>
                 <tr>
-                <?php endforeach; ?>
+            <?php endforeach; ?>
             </tr>
         </table>
     </div>
+    <?php
+        echo '<ul class="pagination">';
+        if ($currentPage > 1) {
+            echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+        }
+        
+        // Hiển thị các trang trong phạm vi
+        for ($page = $startRange; $page <= $endRange; $page++) {
+            echo '<li class="page-item';
+            if ($page == $currentPage) {
+                echo ' active';
+            }
+            echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+        }
+        
+        if ($currentPage < $totalPages) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+        }
+        echo '</ul>';
+        ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <!--===============================================================================================-->
     <!-- <script type="text/javascript" src="js/index.js"></script> -->
@@ -224,7 +272,6 @@ while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                     title_author: { required: true, minlength: 4, maxlength: 50 },
                     title_type: { required: true, minlength: 4, maxlength: 50 },
                     title_year: { required: true, digits: true, maxlength: 4 },
-                    title_quantity: { required: true, digits: true},
                 },
                 messages: {
                     title_name: {
@@ -246,10 +293,6 @@ while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
                         required: "Năm xuất bản không được để trống",
                         digits: "Năm xuất bản phải là 1 dãy số",
                         maxlength: "Năm xuất bản không có thật"
-                    },
-                    title_quantity: {
-                        required: "Hãy nhập vào số lượng",
-                        digits: "Số lượng phải là một dãy số"
                     },
                 },
 

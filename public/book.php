@@ -34,8 +34,7 @@ if (isset($_GET['title_id'])) {
         }
         </script>';
     }
-}
-else{
+} else {
     header("Location: manage_titles.php");
 }
 
@@ -60,40 +59,53 @@ else{
 </head>
 
 <body>
-<?php include '../partials/header.php'; ?>
-<div class="title-book">
-        <?= $title['title_name']?>
-</div>
+    <?php include '../partials/header.php'; ?>
+    <div class="container">
+        <div class="breadcrumb-title">Quản lý quyển sách
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="manage_titles.php">Đầu sách</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Quyển sách</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="title-book">
+            <?= $title['title_name'] ?>
+        </div>
 
-<?php echo '<div class="quantity">Tổng số sách hiện tại: ' . $count_qs . '</div>';?>
+        <?php echo '<div class="quantity">Tổng số sách hiện tại: <strong>' . $count_qs . '</strong></div>'; ?>
 
-<div class="container-m">
-        <table>
-            <tr>
-                <th>Mã số đầu sách</th>
-                <th>Mã số quyển sách</th>
-                <th>Trạng thái</th>
-            </tr>
-            <?php foreach ($data as $book): ?>
+        <div class="container-m">
+            <table>
                 <tr>
-                    <td><?=$title['title_id']?></td>
-                    <td>
-                    <?= $book['book_stt'] ?>
-                    </td>
-                <?php if($book['book_status'] == '0'):?>
-                    <td>
-                        <span style="color: red">Đang mượn</span>
-                    </td>
-                <?php elseif($book['book_status'] == '1'):?>
-                    <td>
-                        <span style="color: green">Chưa mượn</span>
-                    </td>
-                <?php endif; ?>
-                <tr>
-            <?php endforeach; ?>
-            </tr>
-        </table>
+                    <th>Mã số đầu sách</th>
+                    <th>Mã số quyển sách</th>
+                    <th>Trạng thái</th>
+                </tr>
+                <?php foreach ($data as $book): ?>
+                    <tr>
+                        <td>
+                            <?= $title['title_id'] ?>
+                        </td>
+                        <td>
+                            <?= $book['book_stt'] ?>
+                        </td>
+                        <?php if ($book['book_status'] == '0'): ?>
+                            <td>
+                                <span style="color: red">Đang mượn</span>
+                            </td>
+                        <?php elseif ($book['book_status'] == '1'): ?>
+                            <td>
+                                <span style="color: green">Chưa mượn</span>
+                            </td>
+                        <?php endif; ?>
+                    <tr>
+                    <?php endforeach; ?>
+                </tr>
+            </table>
+        </div>
     </div>
+    <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

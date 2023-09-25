@@ -15,6 +15,32 @@ if (isset($_POST['book_stt'])) {
     $stmt_p -> bindParam(':pm_stt', $_POST['pm_stt']);
     $stmt_p->execute();
 }
+// Lấy số lượng bản ghi trong cơ sở dữ liệu
+$query_page = "SELECT COUNT(*) as total FROM phieumuon";
+$result = $db->query($query_page);
+$row_page = $result->fetch(PDO::FETCH_ASSOC);
+$totalRecords = $row_page['total'];
+
+// Số bản ghi hiển thị trên mỗi trang
+$recordsPerPage = 5;
+
+// Tính toán số trang
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+// Xác định trang hiện tại và kiểm tra giá trị
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, min($_GET['page'], $totalPages)) : 1;
+
+// Xác định phạm vi hiển thị các trang
+$range = 5; // Số trang hiển thị
+
+$startRange = max(1, $currentPage - floor($range / 2));
+$endRange = min($totalPages, $startRange + $range - 1);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
+$query_s_e = "SELECT * FROM phieumuon LIMIT $startFrom, $recordsPerPage";
+$result = $db->query($query_s_e);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
 ?>
 
 <!DOCTYPE html>
@@ -51,10 +77,10 @@ if (isset($_POST['book_stt'])) {
                 <th>Trạng thái</th>
                 <th>Hủy</th>
             </tr>
-            <?php $query = 'SELECT * FROM phieumuon pm 
+            <?php $query = "SELECT * FROM phieumuon pm 
                             INNER join quyensach qs on pm.book_stt = qs.book_stt
                             INNER join dausach ds on ds.title_id = qs.title_id
-                            INNER join user u on u.user_id = pm.user_id';
+                            INNER join user u on u.user_id = pm.user_id LIMIT $startFrom, $recordsPerPage";
             $results = $db->query($query);
 
             $data = [];
@@ -110,7 +136,7 @@ if (isset($_POST['book_stt'])) {
                                 <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
                                 <input  id="trangthai" name="trangthai" hidden value="1"></input>
                                 <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                <button type="submit" class="btn btn-primary">Xác nhận</button>
+                                <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
                             </form>
                         </td>
                         <td>
@@ -119,7 +145,7 @@ if (isset($_POST['book_stt'])) {
                                 <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
                                 <input  id="trangthai" name="trangthai" hidden value="3"></input>
                                 <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                <button type="submit" class="btn btn-danger">Hủy</button>
+                                <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
                             </form>
                         </td>
 
@@ -130,7 +156,7 @@ if (isset($_POST['book_stt'])) {
                                 <input  id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
                                 <input  id="trangthai" name="trangthai" hidden value="2"></input>
                                 <input  id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                <button type="submit" class="btn btn-success">Xác nhận trả</button>
+                                <button type="submit" id="giveback" class="btn btn-success">Xác nhận trả</button>
                             </form>
                         </td>
                     <?php elseif($pm['trangthai'] == 2):?>
@@ -143,6 +169,34 @@ if (isset($_POST['book_stt'])) {
             </tr>
         </table>
     </div>
+    <?php
+        echo '<ul class="pagination">';
+        if ($currentPage > 1) {
+            echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+        }
+        
+        // Hiển thị các trang trong phạm vi
+        for ($page = $startRange; $page <= $endRange; $page++) {
+            echo '<li class="page-item';
+            if ($page == $currentPage) {
+                echo ' active';
+            }
+            echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+        }
+        
+        if ($currentPage < $totalPages) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+        }
+        echo '</ul>';
+        ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <!--===============================================================================================-->
     <!-- <script type="text/javascript" src="js/index.js"></script> -->
@@ -153,7 +207,7 @@ if (isset($_POST['book_stt'])) {
     <!--===============================================================================================-->
     <script>
         //Duyêt
-        $("a#btn_confirm").click(function () {
+        $("#confirm").click(function () {
             if (confirm('Bạn bạn chấp nhận phiếu mượn này?')) {
                 alert("Xác nhận thành công");
                 return true;
@@ -161,7 +215,7 @@ if (isset($_POST['book_stt'])) {
             return false;
         });
         //Xác nhận trả
-        $("a#btn_returned").click(function () {
+        $("#giveback").click(function () {
             if (confirm('Bạn xác nhận người mượn đã trả sách?')) {
                 alert("Xác nhận thành công");
                 return true;
@@ -169,7 +223,7 @@ if (isset($_POST['book_stt'])) {
             return false;
         });
         //Hủy
-        $("a#btn_delete").click(function () {
+        $("#cancel").click(function () {
             if (confirm('Bạn chắc chắn muốn hủy yêu cầu này không?')) {
                 alert("Đã hủy thành công");
                 return true;

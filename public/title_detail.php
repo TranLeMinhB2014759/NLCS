@@ -263,24 +263,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <br>
     
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="js/jquery.validate.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+            $.validator.addMethod("checkDate", function(value, element) {
+                var inputDate = new Date(value);
+                var currentDate = new Date();
+                var diffInDays = Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24));
+                
+                return diffInDays <= 60;
+                }, "Ngày không được vượt quá 60 ngày sau ngày hiện tại.");
             $.validator.addMethod("dateAfterToday", function(value, element) {
                 var currentDate = new Date();
                 var inputDate = new Date(value);
 
                 return inputDate > currentDate;
-        }, "Ngày hẹn trả phải sau ngày hiện tại");
-
-        $("#pm").validate({
+                }, "Ngày hẹn trả phải sau ngày hiện tại");
+                    $("#pm").validate({
             rules: {
                 book_return_date: {
                     required: true,
                     date: true,
-                    dateAfterToday: true
+                    checkDate: true,
+                    dateAfterToday: true,
                 },
             },
             messages: {

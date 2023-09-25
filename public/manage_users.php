@@ -35,6 +35,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: " . $_SERVER['HTTP_REFERER']);
     }
 }
+
+
+// Lấy số lượng bản ghi trong cơ sở dữ liệu
+$query_page = "SELECT COUNT(*) as total FROM user";
+$result = $db->query($query_page);
+$row_page = $result->fetch(PDO::FETCH_ASSOC);
+$totalRecords = $row_page['total'];
+
+// Số bản ghi hiển thị trên mỗi trang
+$recordsPerPage = 5;
+
+// Tính toán số trang
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+// Xác định trang hiện tại và kiểm tra giá trị
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, min($_GET['page'], $totalPages)) : 1;
+
+// Xác định phạm vi hiển thị các trang
+$range = 5; // Số trang hiển thị
+
+$startRange = max(1, $currentPage - floor($range / 2));
+$endRange = min($totalPages, $startRange + $range - 1);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
+$query_s_e = "SELECT * FROM user LIMIT $startFrom, $recordsPerPage";
+$result = $db->query($query_s_e);
+
+$startFrom = ($currentPage - 1) * $recordsPerPage;
 ?>
 
 <!DOCTYPE html>
@@ -148,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <th>Sửa</th>
                 <th>Xóa</th>
             </tr>
-            <?php $query = 'SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user;';
+            <?php $query = "SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage";
             $results = $db->query($query);
 
             $data = [];
@@ -166,53 +194,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 );
             }
             ?>
-            <?php 
-                array_shift($data);
-                foreach ($data as $user): ?>
-                <tr>
-                    <td>
-                        <?= $user['user_id'] ?>
-                    </td>
-                    <td>
-                        <?= $user['username'] ?>
-                    </td>
-                    <td>
-                        <?= $user['password'] ?>
-                    </td>
-                    <td>
-                        <?= $user['fullname'] ?>
-                    </td>
-                    <td>
-                        <?= $user['class'] ?>
-                    </td>
-                    <td>
-                        <?= $user['course'] ?>
-                    </td>
-                    <td>
-                        <?php if ($user['sdt'] == 0): ?>
-                            <span>Chưa cập nhật</span>
-                        <?php else: ?>
-                            (+84)
-                            <?= $user['sdt'] ?>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if ($user['email'] == 0): ?>
-                            <span>Chưa cập nhật</span>
-                        <?php else: ?>
-                            <?= $user['email'] ?>
-                        <?php endif; ?>
-                    </td>
-                    <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
-                    <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
-                    <td>
-                        <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger' id='btn_delete'>Delete</a>
-                    </td>
-                <tr>
+            <?php foreach ($data as $user): ?>
+                    <?php if ($user['user_id'] != 1): ?>
+                        <tr>
+                            <td>
+                                <?= $user['user_id'] ?>
+                            </td>
+                            <td>
+                                <?= $user['username'] ?>
+                            </td>
+                            <td>
+                                <?= $user['password'] ?>
+                            </td>
+                            <td>
+                                <?= $user['fullname'] ?>
+                            </td>
+                            <td>
+                                <?= $user['class'] ?>
+                            </td>
+                            <td>
+                                <?= $user['course'] ?>
+                            </td>
+                            <td>
+                                <?php if ($user['sdt'] == 0): ?>
+                                    <span>Chưa cập nhật</span>
+                                <?php else: ?>
+                                    (+84)
+                                    <?= $user['sdt'] ?>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($user['email'] == 0): ?>
+                                    <span>Chưa cập nhật</span>
+                                <?php else: ?>
+                                    <?= $user['email'] ?>
+                                <?php endif; ?>
+                            </td>
+                            <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
+                            <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
+                            <td>
+                                <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger' id='btn_delete'>Delete</a>
+                            </td>
+                        <tr>
+                    <?php else : ?>
+                        <td><?= $user['user_id'] ?></td>
+                        <td colspan="10">ADMIN</td>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </tr>
         </table>
     </div>
+    <?php
+        echo '<ul class="pagination">';
+        if ($currentPage > 1) {
+            echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+        }
+        
+        // Hiển thị các trang trong phạm vi
+        for ($page = $startRange; $page <= $endRange; $page++) {
+            echo '<li class="page-item';
+            if ($page == $currentPage) {
+                echo ' active';
+            }
+            echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+        }
+        
+        if ($currentPage < $totalPages) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+            echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+        } else {
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+        }
+        echo '</ul>';
+        ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <!--===============================================================================================-->
     <!-- <script type="text/javascript" src="js/index.js"></script> -->
