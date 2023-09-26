@@ -1,5 +1,5 @@
 .btn-modal{
-    padding-bottom: 20px;
+    padding: 15px 0;
 }
 #btn-modal{
     position: relative;
@@ -116,6 +116,19 @@ button:active {
     font-weight: normal;
 }
 
+.disabled-ul {
+    display: none;
+}
+
+
+.no-result{
+    text-align: center;
+    width: fit-content;
+    background: white;
+    border-radius: 20px;
+    padding: 50px;
+    margin: auto;
+}
 @media screen and (max-width: 700px){
     body{
         display: table-footer-group;

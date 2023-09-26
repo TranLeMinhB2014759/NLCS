@@ -2,8 +2,8 @@
 session_start();
 include '../partials/db_connect.php';
 include '../partials/check_admin.php';
-//Thêm dữ liệu
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Thêm dữ liệu
+if (isset($_POST['submit1'])) {
 
     $fullname = $_POST['fullname'];
     $username = $_POST['username'];
@@ -63,6 +63,38 @@ $query_s_e = "SELECT * FROM user LIMIT $startFrom, $recordsPerPage";
 $result = $db->query($query_s_e);
 
 $startFrom = ($currentPage - 1) * $recordsPerPage;
+
+//Lấy dữ liệu User
+$data = [];
+if (isset($_POST['submit2'])) {
+    $keyword = $_POST['keyword'];
+    if (!empty($keyword)) {
+        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user WHERE user_id = :keyword");
+        $query->bindValue(':keyword', $keyword);
+        $query->execute();
+    } else {
+        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage");
+        $query->execute();
+    }
+} else {
+    $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage");
+    $query->execute();
+}
+
+while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+    $data[] = array(
+        'user_id' => $row['user_id'],
+        'username' => $row['username'],
+        'password' => $row['password'],
+        'fullname' => $row['fullname'],
+        'class' => $row['class'],
+        'course' => $row['course'],
+        'sdt' => $row['sdt'],
+        'email' => $row['email'],
+        'file_avatar' => $row['file_avatar'],
+    );
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -88,113 +120,111 @@ $startFrom = ($currentPage - 1) * $recordsPerPage;
     <div class="title">
         QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG
     </div>
-    <div class="btn-modal">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" id="btn-modal"
-            title="Thêm tài khoản mới">
-            Thêm Tài Khoản Mới &nbsp<i class="fas fa-edit"></i>
-        </button>
-        <!-- The Modal -->
-        <div class="modal" id="modal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h2 class="modal-title"><i class="fas fa-user-edit">&nbsp</i>Thêm tài khoản mới</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <form method="post" id="account" class="form-horizontal" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="fullname" class="form-label"><b>Your Name:</b></label>
-                                <input type="text" class="form-control" id="fullname" name="fullname"
-                                    placeholder="Enter your name">
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <label for="username" class="form-label"><b>Username:</b></label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                    placeholder="Enter your username">
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <label for="password" class="form-label"><b>Password:</b></label>
-                                <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Enter your password">
-                            </div>
-                            <div class="row">
-                                <div class="mb-3 col-6">
-                                    <label for="class" class="form-label"><b>Class:</b></label>
-                                    <input class="form-control" id="class" name="class" placeholder="Enter your class">
+    <div class="row container">
+        <div class="col-6 btn-modal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" id="btn-modal"
+                title="Thêm tài khoản mới">
+                Thêm Tài Khoản Mới &nbsp<i class="fas fa-edit"></i>
+            </button>
+            <!-- The Modal -->
+            <div class="modal" id="modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h2 class="modal-title"><i class="fas fa-user-edit">&nbsp</i>Thêm tài khoản mới</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <form method="post" id="account" class="form-horizontal" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="fullname" class="form-label"><b>Your Name:</b></label>
+                                    <input type="text" class="form-control" id="fullname" name="fullname"
+                                        placeholder="Enter your name">
                                 </div>
-                                <div class="mb-3 col-6">
-                                    <label for="course" class="form-label"><b>Course:</b></label>
-                                    <input class="form-control" id="course" name="course" placeholder="Enter your course">
+                                <div class="mb-3 mt-3">
+                                    <label for="username" class="form-label"><b>Username:</b></label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                        placeholder="Enter your username">
                                 </div>
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <label for="sdt" class="form-label"><b>Phone Number:</b>
-                                </label>
-                                <input type="text" class="form-control" id="sdt" name="sdt"
-                                    placeholder="Enter the phone number">
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <label for="email" class="form-label"><b>Email:</b>
-                                </label>
-                                <input type="text" class="form-control" id="email" name="email"
-                                    placeholder="Enter the email">
-                            </div>
-                            <div class="row">
-                                <div class="col-2">
-                                    <button type="submit" class="btn btn-primary btn-block">
-                                        OK
-                                    </button>
+                                <div class="mb-3 mt-3">
+                                    <label for="password" class="form-label"><b>Password:</b></label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Enter your password">
                                 </div>
-                                <div class="col-3">
-                                    <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
-                                        Cancel
-                                    </button>
+                                <div class="row">
+                                    <div class="mb-3 col-6">
+                                        <label for="class" class="form-label"><b>Class:</b></label>
+                                        <input class="form-control" id="class" name="class"
+                                            placeholder="Enter your class">
+                                    </div>
+                                    <div class="mb-3 col-6">
+                                        <label for="course" class="form-label"><b>Course:</b></label>
+                                        <input class="form-control" id="course" name="course"
+                                            placeholder="Enter your course">
+                                    </div>
                                 </div>
-                                <div class="col-5"></div>
-                            </div>
-                        </form>
+                                <div class="mb-3 mt-3">
+                                    <label for="sdt" class="form-label"><b>Phone Number:</b>
+                                    </label>
+                                    <input type="text" class="form-control" id="sdt" name="sdt"
+                                        placeholder="Enter the phone number">
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label for="email" class="form-label"><b>Email:</b>
+                                    </label>
+                                    <input type="text" class="form-control" id="email" name="email"
+                                        placeholder="Enter the email">
+                                </div>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <button type="submit" name="submit1" class="btn btn-primary btn-block">
+                                            OK
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                    <div class="col-5"></div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container-m">
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>Fullname</th>
-                <th>Class</th>
-                <th>Course</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Avatar</th>
-                <th>Sửa</th>
-                <th>Xóa</th>
-            </tr>
-            <?php $query = "SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage";
-            $results = $db->query($query);
 
-            $data = [];
-            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array(
-                    'user_id' => $row['user_id'],
-                    'username' => $row['username'],
-                    'password' => $row['password'],
-                    'fullname' => $row['fullname'],
-                    'class' => $row['class'],
-                    'course' => $row['course'],
-                    'sdt' => $row['sdt'],
-                    'email' => $row['email'],
-                    'file_avatar' => $row['file_avatar'],
-                );
-            }
-            ?>
-            <?php foreach ($data as $user): ?>
+
+        <div class="col-6 form-search" style="padding: 0 60px;">
+            <form method="POST">
+                <div class="search input-group mb-3 mt-3">
+                    <input type="text" class="form-control" placeholder="Nhập vào ID..." id="keyword" name="keyword">
+                    <button class="btn btn-primary" type="submit" name="submit2"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <?php if ($query->rowCount() > 0): ?>
+        <div class="container-m">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Fullname</th>
+                    <th>Class</th>
+                    <th>Course</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Avatar</th>
+                    <th>Sửa</th>
+                    <th>Xóa</th>
+                </tr>
+                <?php foreach ($data as $user): ?>
                     <?php if ($user['user_id'] != 1): ?>
                         <tr>
                             <td>
@@ -233,45 +263,56 @@ $startFrom = ($currentPage - 1) * $recordsPerPage;
                             <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
                             <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
                             <td>
-                                <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger' id='btn_delete'>Delete</a>
+                                <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger'
+                                    id='btn_delete'>Delete</a>
                             </td>
                         <tr>
-                    <?php else : ?>
-                        <td><?= $user['user_id'] ?></td>
-                        <td colspan="10">ADMIN</td>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </tr>
-        </table>
-    </div>
+                        <?php else: ?>
+                            <td>
+                                <?= $user['user_id'] ?>
+                            </td>
+                            <td colspan="10">ADMIN</td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tr>
+            </table>
+        </div>
+    <?php else:
+        echo "<div class='no-result'>ID người dùng không tồn tại</div>"; ?>
+    <?php endif; ?>
     <?php
-        echo '<ul class="pagination">';
-        if ($currentPage > 1) {
-            echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
-            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
-        } else {
-            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
-            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+
+    echo '<ul class="pagination ';
+    if (isset($_POST['submit2']) && !empty($keyword)) {
+        echo 'disabled-ul';
+    }
+    echo '">';
+    if ($currentPage > 1) {
+        echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+    } else {
+        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+    }
+
+    // Hiển thị các trang trong phạm vi
+    for ($page = $startRange; $page <= $endRange; $page++) {
+        echo '<li class="page-item';
+        if ($page == $currentPage) {
+            echo ' active';
         }
-        
-        // Hiển thị các trang trong phạm vi
-        for ($page = $startRange; $page <= $endRange; $page++) {
-            echo '<li class="page-item';
-            if ($page == $currentPage) {
-                echo ' active';
-            }
-            echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
-        }
-        
-        if ($currentPage < $totalPages) {
-            echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
-            echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
-        } else {
-            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
-            echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
-        }
-        echo '</ul>';
-        ?>
+        echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+    }
+
+    if ($currentPage < $totalPages) {
+        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+        echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+    } else {
+        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+    }
+    echo '</ul>';
+    ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <!--===============================================================================================-->
     <!-- <script type="text/javascript" src="js/index.js"></script> -->
