@@ -8,7 +8,6 @@ if (isset($_POST['id'])) {
     $t_author = $_POST['t_author'];
     $t_type = $_POST['t_type'];
     $t_year = $_POST['t_year'];
-    $t_quantity = $_POST['t_quantity'];
 
     if (empty($_FILES['t_img']['name'])) {
         //Lưu ảnh vào floder avatar
@@ -21,14 +20,13 @@ if (isset($_POST['id'])) {
         move_uploaded_file($_FILES["t_img"]["tmp_name"], $target_file);
     }
 
-    $query = 'UPDATE dausach SET title_name=?, title_author=?, title_type=?, title_year=?, title_quantity=?, title_img=? WHERE title_id=?';
+    $query = 'UPDATE dausach SET title_name=?, title_author=?, title_type=?, title_year=?, title_img=? WHERE title_id=?';
     $stmt = $db->prepare($query);
     $stmt->execute([
         $_POST['t_name'],
         $_POST['t_author'],
         $_POST['t_type'],
         $_POST['t_year'],
-        $_POST['t_quantity'],
         $_FILES["t_img"]["name"],
         $_POST['id']
     ]);
@@ -57,7 +55,7 @@ if (isset($_POST['id'])) {
     <section class="manage">
         <div class="container-form">
             <div class="title-edit">
-                <h2>Chỉnh sửa thông tin quyển sách</h2>
+                <h2>Chỉnh sửa thông tin đầu sách</h2>
             </div>
             <?php if (isset($_GET['id'])) {
                 $query = "SELECT * FROM dausach WHERE title_id={$_GET['id']}";
@@ -65,7 +63,7 @@ if (isset($_POST['id'])) {
                 $row = $ch->fetch();
                 echo "<form action='edit_title.php' method='post'id='edit' class='form-horizontal' enctype='multipart/form-data'>
             <div class='mb-3'>
-                <label for='t_name'><b>Tên quyển sách:</b></label>
+                <label for='t_name'><b>Tên đầu sách:</b></label>
                 <input class='form-control' id='t_name' name='t_name'
                     value='" . $row["title_name"] . "'>
             </div>
@@ -77,17 +75,10 @@ if (isset($_POST['id'])) {
                 <label for='t_type'><b>Thể loại:</b></label>
                 <input class='form-control' id='t_type' name='t_type' value='" . $row["title_type"] ."'>
             </div>
-            <div class='row'>
-                <div class='mb-3 col-6'>
-                    <label for='t_year'><b>Xuất bản:</b></label>
-                    <input type='text' class='form-control' id='t_year' name='t_year'
+            <div class='mb-3 col-6'>
+                <label for='t_year'><b>Xuất bản:</b></label>
+                <input type='text' class='form-control' id='t_year' name='t_year'
                         value='" . $row["title_year"] . "'>
-                </div>
-                <div class='mb-3 col-6'>
-                    <label for='t_quantity'><b>Số lượng:</b></label>
-                    <input type='text' class='form-control' id='t_quantity' name='t_quantity'
-                        value='" . $row["title_quantity"] . "'>
-                </div>
             </div>
             <div class='mb-3 mt-3'>
             <div style='left: 60px'>
@@ -140,13 +131,12 @@ if (isset($_POST['id'])) {
                     t_author: { required: true, minlength: 4, maxlength: 50 },
                     t_type: { required: true, minlength: 4, maxlength: 50 },
                     t_year: { required: true, digits: true, maxlength: 4 },
-                    t_quantity: { required: true, digits: true},
                 },
                 messages: {
                     t_name: {
-                        required: "Tên quyển sách không được để trống",
-                        minlength: "Tên quyển sách quá ngắn",
-                        maxlength: "Tên quyển sách quá dài"
+                        required: "Tên đầu sách không được để trống",
+                        minlength: "Tên đầu sách quá ngắn",
+                        maxlength: "Tên đầu sách quá dài"
                     },
                     t_author: {
                         required: "Tên tác giả không được để trống",
@@ -162,10 +152,6 @@ if (isset($_POST['id'])) {
                         required: "Năm xuất bản không được để trống",
                         digits: "Năm xuất bản phải là một dãy số",
                         maxlength: "Năm xuất bản không có thật"
-                    },
-                    t_quantity: {
-                        required: "Hãy nhập vào số lượng",
-                        digits: "Số lượng phải là một dãy số"
                     },
                 },
 

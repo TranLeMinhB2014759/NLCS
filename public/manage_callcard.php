@@ -51,21 +51,39 @@ if (isset($_POST['submit'])) {
                                INNER join quyensach qs on pm.book_stt = qs.book_stt
                                INNER join dausach ds on ds.title_id = qs.title_id
                                INNER join user u on u.user_id = pm.user_id 
-                               WHERE pm.pm_stt = :keyword");
+                               WHERE pm.pm_stt = :keyword ORDER BY pm.pm_stt DESC");
         $query->bindValue(':keyword', $keyword);
         $query->execute();
     } else {
         $query = $db->prepare("SELECT * FROM phieumuon pm 
                                INNER join quyensach qs on pm.book_stt = qs.book_stt
                                INNER join dausach ds on ds.title_id = qs.title_id
-                               INNER join user u on u.user_id = pm.user_id LIMIT $startFrom, $recordsPerPage");
+                               INNER join user u on u.user_id = pm.user_id ORDER BY pm.pm_stt DESC LIMIT $startFrom, $recordsPerPage");
         $query->execute();
+    }
+} elseif (isset($_GET['phanloai'])) {
+    $phanloai = $_GET['phanloai'];
+    if ($phanloai != "all") {
+        $query = $db->prepare("SELECT * FROM phieumuon pm 
+                            INNER join quyensach qs on pm.book_stt = qs.book_stt
+                            INNER join dausach ds on ds.title_id = qs.title_id
+                            INNER join user u on u.user_id = pm.user_id
+                            WHERE pm.trangthai = :phanloai
+                            ORDER BY pm.pm_stt ASC");
+        $query->bindValue(':phanloai', $phanloai);
+        $query->execute();
+    } else{
+        $query = $db->prepare("SELECT * FROM phieumuon pm 
+                           INNER join quyensach qs on pm.book_stt = qs.book_stt
+                           INNER join dausach ds on ds.title_id = qs.title_id
+                           INNER join user u on u.user_id = pm.user_id ORDER BY pm.pm_stt DESC LIMIT $startFrom, $recordsPerPage");
+    $query->execute();
     }
 } else {
     $query = $db->prepare("SELECT * FROM phieumuon pm 
                            INNER join quyensach qs on pm.book_stt = qs.book_stt
                            INNER join dausach ds on ds.title_id = qs.title_id
-                           INNER join user u on u.user_id = pm.user_id LIMIT $startFrom, $recordsPerPage");
+                           INNER join user u on u.user_id = pm.user_id ORDER BY pm.pm_stt DESC LIMIT $startFrom, $recordsPerPage");
     $query->execute();
 }
 
@@ -111,16 +129,34 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <div class="title">
         QUẢN LÝ PHIẾU MƯỢN SÁCH
     </div>
-    <div class="container form-search" style="padding: 0 60px;">
-        <form method="POST">
-            <div class="search input-group mb-3 mt-3">
-                <input type="text" class="form-control" placeholder="Nhập vào số phiếu mượn..." id="keyword"
-                    name="keyword">
-                <button class="btn btn-primary" type="submit" name="submit"><i
-                        class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-        </form>
+    <div class="container form-search row" style="padding: 0 60px;">
+        <div class="col-3">
+            <form>
+                <div class="search input-group mb-3 mt-3">
+                    <select class="form-select" name="phanloai" id="phanloai" onchange="this.form.submit()">
+                        <option value="all">Phân loại theo</option>
+                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "all"){echo "selected";}?> value="all">Tất cả</option>
+                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "0"){echo "selected";}?> value="0">Chờ xử lý</option>
+                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "1"){echo "selected";}?> value="1">Đang mượn</option>
+                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "2"){echo "selected";}?> value="2">Đã trả</option>
+                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "3"){echo "selected";}?> value="3">Đã hủy</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-5"></div>
+        <div class="col-4">
+            <form method="POST">
+                <div class="search input-group mb-3 mt-3">
+                    <input type="text" class="form-control" placeholder="Nhập vào số phiếu mượn..." id="keyword"
+                        name="keyword">
+                    <button class="btn btn-primary" type="submit" name="submit"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        </div>
     </div>
+
     <?php if ($query->rowCount() > 0): ?>
         <div class="container-m">
             <table>
@@ -207,8 +243,18 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <?php endif; ?>
     <?php
     echo '<ul class="pagination ';
-    if (isset($_POST['submit']) && !empty($keyword)) {
-        echo 'disabled-ul';
+    if(!isset($_GET['phanloai'])){
+        if (isset($_POST['submit']) && !empty($keyword)) {
+            echo 'disabled-ul';
+        }else{
+            echo '';
+        }
+    } else{
+        if ((isset($_POST['submit']) && empty($keyword)) || $phanloai == "all") {
+            echo '';
+        }else{
+            echo 'disabled-ul';
+        }
     }
     echo '">';
     if ($currentPage > 1) {

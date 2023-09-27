@@ -18,7 +18,7 @@
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 2): ?>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" id="navbardrop" data-bs-toggle="dropdown">
                                     Manage
@@ -31,7 +31,7 @@
                             </li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0 || isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
                             <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <!-- Dropdown -->
                             <li class="nav-item dropdown">

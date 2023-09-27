@@ -364,7 +364,7 @@
                                                 <div class="col-12 col-md-6 phieumuon">
                                                     <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_w["pm_stt"]) .'</h4>
                                                     <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_w["title_name"]) .'</h4>
-                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_w["title_id"]) . htmlspecialchars($r_w["book_stt"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . "CNTT.". str_pad($r_w["book_stt"], 4, '0', STR_PAD_LEFT) .'</h4>
                                                     <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_w["pm_ngaymuon"]) .'</h4>
                                                     <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_w["pm_ngayhentra"]) .'</h4>
                                                     <h4><b>Trạng thái: </b><span>Chờ xử lý</span></h4>
@@ -385,7 +385,7 @@
                                                 <div class="col-12 col-md-6 phieumuon">
                                                     <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_b["pm_stt"]) .'</h4>
                                                     <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_b["title_name"]) .'</h4>
-                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_b["title_id"]) . htmlspecialchars($r_b["book_stt"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . "CNTT.". str_pad($r_b["book_stt"], 4, '0', STR_PAD_LEFT) .'</h4>
                                                     <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_b["pm_ngaymuon"]) .'</h4>
                                                     <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_b["pm_ngayhentra"]) .'</h4>
                                                     <h4><b>Trạng thái: </b><span style="color:green">Đang mượn</span></h4>
@@ -406,7 +406,7 @@
                                                 <div class="col-12 col-md-6 phieumuon">
                                                     <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_g["pm_stt"]) .'</h4>
                                                     <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_g["title_name"]) .'</h4>
-                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_g["title_id"]) . htmlspecialchars($r_g["book_stt"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . "CNTT.". str_pad($r_g["book_stt"], 4, '0', STR_PAD_LEFT) .'</h4>
                                                     <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_g["pm_ngaymuon"]) .'</h4>
                                                     <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_g["pm_ngayhentra"]) .'</h4>
                                                     <h4><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
@@ -427,7 +427,7 @@
                                                 <div class="col-12 col-md-6 phieumuon">
                                                     <h4 class="sophieu text-center">'."<b>Số phiếu: </b>". htmlspecialchars($r_c["pm_stt"]) .'</h4>
                                                     <h4>'. "<b>Tên sách: </b>" . htmlspecialchars($r_c["title_name"]) .'</h4>
-                                                    <h4>'. "<b>Mã sách: </b>" . htmlspecialchars($r_c["title_id"]) . htmlspecialchars($r_c["book_stt"]) .'</h4>
+                                                    <h4>'. "<b>Mã sách: </b>" . "CNTT.". str_pad($r_c["book_stt"], 4, '0', STR_PAD_LEFT) .'</h4>
                                                     <h4>'. "<b>Ngày mượn: </b>" . htmlspecialchars($r_c["pm_ngaymuon"]) .'</h4>
                                                     <h4>'. "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_c["pm_ngayhentra"]) .'</h4>
                                                     <h4><b>Trạng thái: </b><span style="color:red">Đã bị hủy</span></h4>

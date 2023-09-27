@@ -47,12 +47,12 @@ while ($row_stt = $book->fetch(PDO::FETCH_ASSOC)) {
 
 //Mượn sách
 $currentDate = date('d-m-Y');
+$book_return_date = date('d-m-Y', strtotime("+20 days"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$user_id = $_POST['user_id'];
     $title_id = $_POST['title_id'];
     $book_stt = $_POST['book_stt'];
-    $book_return_date = date("d-m-Y", strtotime($_POST['book_return_date']));
 
 	$stmt = $db->prepare('
 				INSERT INTO phieumuon (user_id, title_id, book_stt, pm_ngaymuon, pm_ngayhentra, trangthai)
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </strong>
                             <br>
                             <h4>
-                                <?php echo '<b>Mã số sách: </b>' . htmlspecialchars($row['title_id']) . ''; ?>
+                                <?php echo '<b>Mã số đầu sách: </b>' . htmlspecialchars($row['title_id']) . ''; ?>
                             </h4>
                             <h4>
                                 <?php echo '<b>Tác giả: </b>' . htmlspecialchars($row['title_author']) . ''; ?>
@@ -144,10 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </a>
                             <?php endif ?>
                             <?php if (isset($_SESSION['user'])): ?>
-                                <?php if ($_SESSION['user']['sdt'] == 0 && $_SESSION['user']['role'] != 1 || $_SESSION['user']['email'] == 0 && $_SESSION['user']['role'] != 1): ?>
+                                <?php if ($_SESSION['user']['sdt'] == 0 && $_SESSION['user']['role'] != 2 || $_SESSION['user']['email'] == 0 && $_SESSION['user']['role'] != 2): ?>
                                     <h5 style="color: red;">Hãy cập nhật thông tin đầy đủ để có thể mượn sách!</h5>
                                 <?php endif ?>
-                                <?php if ($_SESSION['user']['sdt'] != 0 && $_SESSION['user']['email'] != 0 && $_SESSION['user']['role'] != 1): ?>
+                                <?php if ($_SESSION['user']['sdt'] != 0 && $_SESSION['user']['email'] != 0 && $_SESSION['user']['role'] != 2): ?>
                                 <button data-bs-toggle="modal" data-bs-target="#modal" title="Đăng kí mượn sách">
                                     Mượn Sách
                                     <div class="arrow-wrapper">
@@ -187,9 +187,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         <option value="">------- Chọn mã số sách -------</option>
                                                         <?php foreach ($data as $book): ?>
                                                             <?php if($book['book_status'] == "1") :?>
-                                                                <option value="<?= $book['book_stt']?>"><?= $_SESSION['title']['title_id'].$book['book_stt']?></option>
+                                                                <option value="<?= $book['book_stt']?>"><?= "CNTT.".str_pad($book['book_stt'], 4, '0', STR_PAD_LEFT)?></option>
                                                             <?php else:?>
-                                                                <option value="">Không còn sách tại thư viện</option>
+                                                                <option value=""><?= "CNTT.".str_pad($book['book_stt'], 4, '0', STR_PAD_LEFT)?> (Không còn sách tại thư viện)</option>
                                                             <?php endif; ?>
                                                         <?php endforeach; ?>
                                                         <input id="title_id" name="title_id" hidden value="<?= $_SESSION['title']['title_id']?>"></input>
@@ -209,7 +209,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         <label for="book_return_date" class="form-label">
                                                             Ngày hẹn trả:
                                                         </label>
-                                                        <input type="date" class="form-control" id="book_return_date" name="book_return_date"></input>
+                                                        <input type="date" class="form-control" id="book_return_date" name="book_return_date" value="<?php echo $book_return_date;?>" hidden></input>
+                                                        <input class="form-control" value="<?php echo $book_return_date;?>" disabled></input>
                                                     </div>
                                                 </div>
                                             </div>
@@ -317,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         var qrcode = new QRCode(document.getElementById("qrcode"), {
             text: convert("<?php
             echo htmlspecialchars($row['title_name']) . '\n' .
-                'Mã Số Sách: ' . htmlspecialchars($row['title_id']) . '\n' .
+                'Mã số đầu sách: ' . htmlspecialchars($row['title_id']) . '\n' .
                 'Tác giả: ' . htmlspecialchars($row['title_author']) . '\n' .
                 'Thể loại: ' . htmlspecialchars($row['title_type']) . '\n' .
                 'Xuất bản năm: ' . htmlspecialchars($row['title_year']) . '';

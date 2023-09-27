@@ -12,7 +12,7 @@ if (isset($_GET['title_id'])) {
     if ($title_check_id->rowCount() > 0) {
         //Quyen sach
         $title = $title_check_id->fetch(PDO::FETCH_ASSOC);
-        $query_b = "SELECT * FROM quyensach WHERE title_id = :title_id";
+        $query_b = "SELECT CONCAT('CNTT.', LPAD(book_stt, 4, '0')) AS book_stt, book_status FROM quyensach WHERE title_id = :title_id";
         $book = $db->prepare($query_b);
         $book->bindParam(':title_id', $_GET['title_id']);
         $book->execute();
@@ -78,15 +78,11 @@ if (isset($_GET['title_id'])) {
         <div class="container-m">
             <table>
                 <tr>
-                    <th>Mã số đầu sách</th>
                     <th>Mã số quyển sách</th>
                     <th>Trạng thái</th>
                 </tr>
                 <?php foreach ($data as $book): ?>
                     <tr>
-                        <td>
-                            <?= $title['title_id'] ?>
-                        </td>
                         <td>
                             <?= $book['book_stt'] ?>
                         </td>

@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="leftMenu">
                             <ul>
                                 <li style="font-weight:400"><b>Tìm nhanh: </b>Từ khóa bất kì</li>
-                                <li style="font-weight:400"><b>Tìm theo mã số: </b>Mã số sách</li>
+                                <li style="font-weight:400"><b>Tìm theo đầu sách: </b>Mã số sách</li>
                                 <li style="font-weight:400"><b>Tìm tác giả: </b>Tên Tác giả</li>
                                 <li style="font-weight:400"><b>Tìm tên sách: </b>Tên sách</li>
                             </ul>
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <select class="form-select" width="48" id="select_search"
                                                 name="select_search">
                                                 <option value="*">Tìm nhanh</option>
-                                                <option value="title_id">Mã số sách</option>
+                                                <option value="title_id">Đầu sách</option>
                                                 <option value="title_name">Tên sách</option>
                                                 <option value="title_author">Tên tác giả</option>
                                             </select>
