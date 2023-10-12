@@ -105,10 +105,10 @@ if (isset($_GET['title_id'])) {
                             <a href="title_detail.php?title_id=' . htmlspecialchars($rows["title_id"]) . '">
                                 <figure>
                                     <img class="book_img img-fluid" src="uploads/' . htmlspecialchars($rows["title_img"]) . '">
-                                <figure>
+                                </figure>
                                 <figcaption>
                                     ' . htmlspecialchars($rows["title_name"]) . '
-                                <figcaption>
+                                </figcaption>
                             </a>
                         </div>';
             }

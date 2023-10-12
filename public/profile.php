@@ -2,19 +2,7 @@
 session_start();
 include '../partials/db_connect.php';
 include '../partials/check_user.php';
-// Cặp sách
-$query_pm_l = $db->prepare('SELECT * FROM capsach cs
-                            INNER JOIN user u on cs.user_id = u.user_id
-                            INNER JOIN phieumuon pm on pm.user_id = u.user_id 
-                            INNER JOIN quyensach qs on pm.book_stt = qs.book_stt 
-                            INNER JOIN dausach ds on pm.title_id = ds.title_id 
-                            WHERE u.user_id = :user_id');
-$query_pm_l->bindValue(':user_id', $_SESSION['user']['id']);
-$query_pm_l->execute();
-$results_pm_l = $query_pm_l->fetchAll();
-$rows_l = $query_pm_l->rowCount();
-
-// Lấy thông tin
+// Lấy thông tin filterBooks
 $query_t = "SELECT * FROM dausach";
 $title = $db->prepare($query_t);
 $title->execute();
@@ -45,16 +33,39 @@ $book_return_date = date('d-m-Y', strtotime("+20 days"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_POST['user_id'];
-    $title_id = $_POST['title_id'];
-    $book_stt = $_POST['book_stt'];
+    $title_id = array();
+    $i = 1;
+
+    while ($i <= 5) {
+        $title_id_value = $_POST["title_id_$i"];
+        if ($title_id_value == "") {
+            break; // Dừng vòng lặp nếu $title_id_value rỗng
+        }
+        $title_id[] = $title_id_value;
+        $i++;
+    }
+    $title_id_string = implode(", ", $title_id);
+
+    $book_stt = array();
+    //Lấy danh sách quyển sách
+    $i = 1;
+    while ($i <= 5) {
+        $book_stt_value = $_POST["book_stt_$i"];
+        if ($book_stt_value == "") {
+            break;
+        }
+        $book_stt[] = $book_stt_value;
+        $i++;
+    }
+    $book_stt_string = implode(", ", $book_stt);
 
     $stmt = $db->prepare('
                 INSERT INTO phieumuon (user_id, title_id, book_stt, pm_ngaymuon, pm_ngayhentra, trangthai)
                 VALUES (:user_id, :title_id, :book_stt, :pm_ngaymuon, :pm_ngayhentra, :trangthai)
                 ');
     $stmt->bindParam(':user_id', $user_id);
-    $stmt->bindParam(':title_id', $title_id);
-    $stmt->bindParam(':book_stt', $book_stt);
+    $stmt->bindParam(':title_id', $title_id_string);
+    $stmt->bindParam(':book_stt', $book_stt_string);
     $stmt->bindParam(':pm_ngaymuon', $currentDate);
     $stmt->bindParam(':pm_ngayhentra', $book_return_date);
     $stmt->bindValue(':trangthai', "");
@@ -65,20 +76,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>';
     header("Location: " . $_SERVER['HTTP_REFERER']);
 
-    $query_update = 'UPDATE quyensach SET book_status=? WHERE book_stt=? AND title_id=?';
+    $query_update = "UPDATE quyensach SET book_status = '0' WHERE book_stt IN ($book_stt_string)";
     $stmt_update = $db->prepare($query_update);
-    $stmt_update->execute([
-        0,
-        $_POST['book_stt'],
-        $_POST['title_id'],
-    ]);
+    $stmt_update->execute();
 }
 
 //Chờ xử lý
-$query_pm_w = $db->prepare('SELECT * FROM phieumuon pm 
-                                INNER JOIN quyensach qs on pm.book_stt = qs.book_stt 
-                                INNER JOIN dausach ds on pm.title_id = ds.title_id 
-                                WHERE pm.user_id = :user_id AND pm.trangthai = :trangthai');
+$query_pm_w = $db->prepare('SELECT * FROM phieumuon pm
+                            INNER JOIN quyensach qs on pm.book_stt = qs.book_stt 
+                            INNER JOIN dausach ds on pm.title_id = ds.title_id 
+                            WHERE user_id = :user_id AND trangthai = :trangthai');
 $query_pm_w->bindValue(':user_id', $_SESSION['user']['id']);
 $query_pm_w->bindValue(':trangthai', 0);
 $query_pm_w->execute();
@@ -118,6 +125,7 @@ $query_pm_c->execute();
 $results_pm_c = $query_pm_c->fetchAll();
 $rows_c = $query_pm_c->rowCount();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -148,16 +156,16 @@ $rows_c = $query_pm_c->rowCount();
                         <ul>
                             <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a>
                             </li>
-                            <li id="tab2"><a href="#" onclick="active_waiting()">Chở xử lý (
+                            <li id="tab2"><a href="#tab2" onclick="active_waiting()">Chở xử lý (
                                     <?= $rows_w ?>)
                                 </a></li>
-                            <li id="tab3"><a href="#" onclick="active_borrow()">Sách đang mượn (
+                            <li id="tab3"><a href="#tab3" onclick="active_borrow()">Sách đang mượn (
                                     <?= $rows_b ?>)
                                 </a></li>
-                            <li id="tab4"><a href="#" onclick="active_giveback()">Sách đã trả (
+                            <li id="tab4"><a href="#tab4" onclick="active_giveback()">Sách đã trả (
                                     <?= $rows_g ?>)
                                 </a></li>
-                            <li id="tab5"><a href="#" onclick="active_expired()">Đã bị hủy (
+                            <li id="tab5"><a href="#tab5" onclick="active_expired()">Đã bị hủy (
                                     <?= $rows_c ?>)
                                 </a></li>
                         </ul>
@@ -435,7 +443,6 @@ $rows_c = $query_pm_c->rowCount();
                                         id="delete" title="Xóa tài khoản">Delete your Account?</a></div>
                             </div>
                         </div>
-
                         <div class="tab2 animate__animated" style="display:none">
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" title="Đăng kí mượn sách" style="margin-bottom: 10px;">
                                 <i class="fa-solid fa-plus"></i> Mượn Sách
@@ -494,7 +501,7 @@ $rows_c = $query_pm_c->rowCount();
                                                 </div>
 
                                                 <div class="row input_add">
-                                                    <a href="#" class="btn btn-primary" onclick="addNewRow()"> <i class="fa-solid fa-plus"></i> Thêm dòng mới </a>
+                                                    <a href="#" id="addNewRow" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> Thêm dòng mới </a>
                                                 </div>
                                                                 
                                                 <div class="row">
@@ -528,19 +535,34 @@ $rows_c = $query_pm_c->rowCount();
                                     </div>
                                 </div>
                             <?php
-                            //Chờ xử lý
+                        //Chờ xử lý
                             if ($rows_w != 0) {
                                 echo '<div class="row">';
                                 foreach ($results_pm_w as $r_w) {
                                     echo '
-                                                    <div class="col-12 col-md-6 phieumuon">
-                                                        <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_w["pm_stt"]) . '</h4>
-                                                        <h4>' . "<b>Tên sách: </b>" . htmlspecialchars($r_w["title_name"]) . '</h4>
-                                                        <h4>' . "<b>Mã sách: </b>" . "CNTT." . str_pad($r_w["book_stt"], 4, '0', STR_PAD_LEFT) . '</h4>
-                                                        <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_w["pm_ngaymuon"]) . '</h4>
-                                                        <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_w["pm_ngayhentra"]) . '</h4>
-                                                        <h4><b>Trạng thái: </b><span>Chờ xử lý</span></h4>
-                                                    </div>';
+                                        <div class="col-12 col-md-6 phieumuon">
+                                            <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_w["pm_stt"]) . '</h4>';
+                                                $query_pm_w_l = $db->prepare('SELECT * FROM phieumuon WHERE trangthai = :trangthai AND pm_stt =:pm_stt');
+                                                $query_pm_w_l->bindValue(':pm_stt', $r_w["pm_stt"]);
+                                                $query_pm_w_l->bindValue(':trangthai', 0);
+                                                $query_pm_w_l->execute();
+                                                $results_pm_w_l = $query_pm_w_l->fetchAll();
+                                                foreach ($results_pm_w_l as $row_w_l) {
+                                                    $book_stt_w_l = explode(", ", $row_w_l['book_stt']);
+                                                    $title_id_w_l = explode(", ", $row_w_l['title_id']);
+                                        echo '<h4><b>Danh sách mượn: </b></h4>';
+                                        echo '<h4>';
+                                                    foreach ($book_stt_w_l as $key => $value_w) {
+                                                        $value_w_t = $title_id_w_l[$key];
+                                                        echo " | " . "<a href='http://nlcs.localhost/title_detail.php?title_id=" . $value_w_t . "' target='_blank'>CNTT." . str_pad($value_w, 4, '0', STR_PAD_LEFT) . "</a>";
+                                                    }
+                                        echo '</h4>';
+                                                }
+                                    echo '
+                                            <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_w["pm_ngaymuon"]) . '</h4>
+                                            <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_w["pm_ngayhentra"]) . '</h4>
+                                            <h4><b>Trạng thái: </b style="font-weight: bold;"><span>Chờ xử lý</span></h4>
+                                        </div>';
                                 }
                                 echo '   </div>';
                             } else {
@@ -551,61 +573,106 @@ $rows_c = $query_pm_c->rowCount();
 
                         <?php
                         //Đang mượn
-                        if ($rows_b != 0) {
-                            echo '<div class="tab3 animate__animated" style="display:none">
-                                                <div class="row">';
-                            foreach ($results_pm_b as $r_b) {
-                                echo '
-                                                <div class="col-12 col-md-6 phieumuon">
-                                                    <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_b["pm_stt"]) . '</h4>
-                                                    <h4>' . "<b>Tên sách: </b>" . htmlspecialchars($r_b["title_name"]) . '</h4>
-                                                    <h4>' . "<b>Mã sách: </b>" . "CNTT." . str_pad($r_b["book_stt"], 4, '0', STR_PAD_LEFT) . '</h4>
-                                                    <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_b["pm_ngaymuon"]) . '</h4>
-                                                    <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_b["pm_ngayhentra"]) . '</h4>
-                                                    <h4><b>Trạng thái: </b><span style="color:green">Đang mượn</span></h4>
-                                                </div>';
+                            if ($rows_b != 0) {
+                                echo '<div class="tab3 animate__animated" style="display:none">
+                                    <div class="row">';
+                                foreach ($results_pm_b as $r_b) {
+                                    echo '
+                                        <div class="col-12 col-md-6 phieumuon">
+                                            <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_b["pm_stt"]) . '</h4>';
+                                                $query_pm_b_l = $db->prepare('SELECT * FROM phieumuon WHERE trangthai = :trangthai AND pm_stt =:pm_stt');
+                                                $query_pm_b_l->bindValue(':pm_stt', $r_b["pm_stt"]);
+                                                $query_pm_b_l->bindValue(':trangthai', 1);
+                                                $query_pm_b_l->execute();
+                                                $results_pm_b_l = $query_pm_b_l->fetchAll();
+                                                foreach ($results_pm_b_l as $row_b_l) {
+                                                    $book_stt_b_l = explode(", ", $row_b_l['book_stt']);
+                                                    $title_id_b_l = explode(", ", $row_b_l['title_id']);
+                                                    echo '<h4><b>Danh sách mượn: </b></h4>';
+                                                    echo '<h4>';
+                                                        foreach ($book_stt_b_l as $key => $value_b) {
+                                                            $value_b_t = $title_id_b_l[$key];
+                                                            echo " | " . "<a href='http://nlcs.localhost/title_detail.php?title_id=" . $value_b_t . "' target='_blank'>CNTT." . str_pad($value_b, 4, '0', STR_PAD_LEFT) . "</a>";
+                                                        }
+                                                        echo '</h4>';
+                                                    }
+                                    echo '
+                                            <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_b["pm_ngaymuon"]) . '</h4>
+                                            <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_b["pm_ngayhentra"]) . '</h4>
+                                            <h4><b>Trạng thái: </b><span style="color:green; font-weight: bold">Đang mượn</span></h4>
+                                        </div>';
                             }
                             echo '   </div>
-                                            </div>';
+                                    </div>';
                         } else {
                             echo '<div class="tab3 text-center animate__animated" style="display:none">Không có thông tin</div>';
                         }
 
                         //Đã trả
-                        if ($rows_g != 0) {
-                            echo '<div class="tab4 animate__animated" style="display:none">
+                            if ($rows_g != 0) {
+                                echo '<div class="tab4 animate__animated" style="display:none">
                                                 <div class="row">';
-                            foreach ($results_pm_g as $r_g) {
-                                echo '
-                                                <div class="col-12 col-md-6 phieumuon">
-                                                    <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_g["pm_stt"]) . '</h4>
-                                                    <h4>' . "<b>Tên sách: </b>" . htmlspecialchars($r_g["title_name"]) . '</h4>
-                                                    <h4>' . "<b>Mã sách: </b>" . "CNTT." . str_pad($r_g["book_stt"], 4, '0', STR_PAD_LEFT) . '</h4>
-                                                    <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_g["pm_ngaymuon"]) . '</h4>
-                                                    <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_g["pm_ngayhentra"]) . '</h4>
-                                                    <h4><b>Trạng thái: </b><span style="color:green">Đã trả</span></h4>
-                                                </div>';
+                                foreach ($results_pm_g as $r_g) {
+                                    echo '
+                                        <div class="col-12 col-md-6 phieumuon">
+                                            <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_g["pm_stt"]) . '</h4>';
+                                                $query_pm_g_l = $db->prepare('SELECT * FROM phieumuon WHERE trangthai = :trangthai AND pm_stt =:pm_stt');
+                                                $query_pm_g_l->bindValue(':pm_stt', $r_g["pm_stt"]);
+                                                $query_pm_g_l->bindValue(':trangthai', 2);
+                                                $query_pm_g_l->execute();
+                                                $results_pm_g_l = $query_pm_g_l->fetchAll();
+                                                foreach ($results_pm_g_l as $row_g_l) {
+                                                    $book_stt_g_l = explode(", ", $row_g_l['book_stt']);
+                                                    $title_id_g_l = explode(", ", $row_g_l['title_id']);
+                                                    echo '<h4><b>Danh sách mượn: </b></h4>';
+                                                    echo '<h4>';
+                                                    foreach ($book_stt_g_l as $key => $value_g) {
+                                                        $value_g_t = $title_id_g_l[$key];
+                                                        echo " | " . "<a href='http://nlcs.localhost/title_detail.php?title_id=" . $value_g_t . "' target='_blank'>CNTT." . str_pad($value_g, 4, '0', STR_PAD_LEFT) . "</a>";
+                                                    }
+                                                    echo '</h4>';
+                                                }
+                                    echo '
+                                            <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_g["pm_ngaymuon"]) . '</h4>
+                                            <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_g["pm_ngayhentra"]) . '</h4>
+                                            <h4><b>Trạng thái: </b><span style="color:green; font-weight: bold;">Đã trả</span></h4>
+                                        </div>';
                             }
-                            echo '   </div>
-                                            </div>';
+                                 echo '   </div>
+                                        </div>';
                         } else {
                             echo '<div class="tab4 text-center animate__animated" style="display:none">Không có thông tin</div>';
                         }
 
                         //Đã bị hủy
-                        if ($rows_c != 0) {
-                            echo '<div class="tab5 animate__animated" style="display:none">
-                                                <div class="row">';
-                            foreach ($results_pm_c as $r_c) {
-                                echo '
-                                                <div class="col-12 col-md-6 phieumuon">
-                                                    <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_c["pm_stt"]) . '</h4>
-                                                    <h4>' . "<b>Tên sách: </b>" . htmlspecialchars($r_c["title_name"]) . '</h4>
-                                                    <h4>' . "<b>Mã sách: </b>" . "CNTT." . str_pad($r_c["book_stt"], 4, '0', STR_PAD_LEFT) . '</h4>
-                                                    <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_c["pm_ngaymuon"]) . '</h4>
-                                                    <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_c["pm_ngayhentra"]) . '</h4>
-                                                    <h4><b>Trạng thái: </b><span style="color:red">Đã bị hủy</span></h4>
-                                                </div>';
+                            if ($rows_c != 0) {
+                                echo '<div class="tab5 animate__animated" style="display:none">
+                                        <div class="row">';
+                                foreach ($results_pm_c as $r_c) {
+                                    echo '
+                                        <div class="col-12 col-md-6 phieumuon">
+                                            <h4 class="sophieu text-center">' . "<b>Số phiếu: </b>" . htmlspecialchars($r_c["pm_stt"]) . '</h4>';
+                                            $query_pm_c_l = $db->prepare('SELECT * FROM phieumuon WHERE trangthai = :trangthai AND pm_stt =:pm_stt');
+                                            $query_pm_c_l->bindValue(':pm_stt', $r_c["pm_stt"]);
+                                            $query_pm_c_l->bindValue(':trangthai', 3);
+                                            $query_pm_c_l->execute();
+                                            $results_pm_c_l = $query_pm_c_l->fetchAll();
+                                            foreach ($results_pm_c_l as $row_c_l) {
+                                                $book_stt_c_l = explode(", ", $row_c_l['book_stt']);
+                                                $title_id_c_l = explode(", ", $row_c_l['title_id']);
+                                                echo '<h4><b>Danh sách mượn: </b></h4>';
+                                                echo '<h4>';
+                                                foreach ($book_stt_c_l as $key => $value_c) {
+                                                    $value_c_t = $title_id_c_l[$key];
+                                                    echo " | " . "<a href='http://nlcs.localhost/title_detail.php?title_id=" . $value_c_t . "' target='_blank'>CNTT." . str_pad($value_c, 4, '0', STR_PAD_LEFT) . "</a>";
+                                                }
+                                                echo '</h4>';
+                                            }
+                                    echo '
+                                            <h4>' . "<b>Ngày mượn: </b>" . htmlspecialchars($r_c["pm_ngaymuon"]) . '</h4>
+                                            <h4>' . "<b>Ngày hẹn trả: </b>" . htmlspecialchars($r_c["pm_ngayhentra"]) . '</h4>
+                                            <h4><b>Trạng thái: </b><span style="color:red; font-weight: bold">Đã bị hủy</span></h4>
+                                        </div>';
                             }
                             echo '   </div>
                                             </div>';
@@ -751,60 +818,65 @@ $rows_c = $query_pm_c->rowCount();
                 <?php endif; ?>
             <?php endforeach; ?>
             
-            // // Enable hoặc disable trường select quyển sách
-            // if (titleId !== "") {
-            //     bookSelect.disabled = false;
-            // } else {
-            //     bookSelect.disabled = true;
-            // }
-
         }
     </script>
         
     <!--===============================================================================================-->
     <script>
-    var rowCount = 1;
-    var maxRowCount = 5; // Giới hạn số lần thêm dòng mới
+        $('#addNewRow').click(function () {
+            if (confirm('Bạn chắc chắn muốn thêm một dòng mới?')) {
+                addNewRow()
+            }
+        });
+        var rowCount = 1;
+        var maxRowCount = 5; // Giới hạn số lần thêm dòng mới
 
-    function addNewRow() {
-        if (rowCount < maxRowCount) {
-            rowCount++;
-            var newRow = `
-                <div class="row">
-                    <div class="mb-3 col-6">
-                        <label for="title_id_${rowCount}" class="form-label">
-                            Mã số đầu sách
-                        </label>
-                        <select class="form-select" name="title_id_${rowCount}" id="title_id_${rowCount}" required onchange="filterBooks(${rowCount})">
-                            <option value="">-- Chọn đầu sách --</option>
-                            <?php foreach ($data_t as $title): ?>
-                                <option value="<?= $title['title_id']?>"><?= $title['title_id']?></option>
-                            <?php endforeach; ?>
-                        </select>
+        function addNewRow() {
+            if (rowCount < maxRowCount) {
+                rowCount++;
+                var newRow = `
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="title_id_${rowCount}" class="form-label">
+                                Mã số đầu sách
+                            </label>
+                            <select class="form-select" name="title_id_${rowCount}" id="title_id_${rowCount}" required onchange="filterBooks(${rowCount})">
+                                <option value="">-- Chọn đầu sách --</option>
+                                <?php foreach ($data_t as $title): ?>
+                                    <option value="<?= $title['title_id']?>"><?= $title['title_id']?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3 col-6">
+                            <label for="book_stt_${rowCount}" class="form-label">
+                                Mã số sách
+                            </label>
+                            <select class="form-select" name="book_stt_${rowCount}" id="book_stt_${rowCount}" required>
+                                <option value="" disabled>-- Chọn mã số sách --</option>
+                            </select>
+                        </div>
                     </div>
-                    
-                    <div class="mb-3 col-6">
-                        <label for="book_stt_${rowCount}" class="form-label">
-                            Mã số sách
-                        </label>
-                        <select class="form-select" name="book_stt_${rowCount}" id="book_stt_${rowCount}" required>
-                            <option value="" disabled>-- Chọn mã số sách --</option>
-                        </select>
-                    </div>
-                </div>
-            `;
+                `;
             var addButtonRow = document.querySelector('.input_add');
             addButtonRow.insertAdjacentHTML('beforebegin', newRow);
-                                
+                                    
             var note = document.querySelector('.note')
             note.style.display = 'block';
-        }
+            }
 
-        if (rowCount >= maxRowCount) {
-            addButtonRow.style.display = 'none';
+            if (rowCount >= maxRowCount) {
+                addButtonRow.style.display = 'none';
+            }
         }
-    }
-</script>
+    </script>
+    <script>
+        console.log("URL hash: " + window.location.hash);
+        if (window.location.hash === "#tab2") {
+        console.log("Hash matches #tab2");
+        active_waiting();
+        }
+    </script>
 </body>
 <?php
 unset($_SESSION['user']['error']);

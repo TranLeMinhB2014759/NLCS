@@ -19,6 +19,7 @@
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>
                         <?php endif ?>
                         <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 2): ?>
+                            <li class="nav-item"><a class="nav-link" href="statistic.php">Statistics</a></li>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" id="navbardrop" data-bs-toggle="dropdown">
                                     Manage

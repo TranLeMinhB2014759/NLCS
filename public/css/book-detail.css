@@ -77,7 +77,7 @@ strong {
     font-size: 1.2rem;
     position: absolute;
     height: fit-content;
-    width: 222px;
+    width: -webkit-fill-available;
     display: flex;
     justify-content: center;
     background: linear-gradient(to top,

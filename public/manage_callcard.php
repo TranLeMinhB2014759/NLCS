@@ -2,14 +2,19 @@
 session_start();
 include '../partials/db_connect.php';
 include '../partials/check_admin.php';
-if (isset($_POST['book_stt'])) {
-    $query_book = 'UPDATE quyensach SET book_status=:book_status WHERE book_stt=:book_stt';
+//Update trạng thái phiếu mượn vaf cập nhật trạng thái sách trong thư viện
+if (isset($_POST['book_stt_string'])) {
+    $book_stt_string = $_POST['book_stt_string'];
+    $book_status = $_POST['book_status'];
+
+    $query_book = "UPDATE quyensach SET book_status=:book_status WHERE book_stt IN ($book_stt_string)";
     $stmt_b = $db->prepare($query_book);
-    $stmt_b->bindParam(':book_status', $_POST['book_status']);
-    $stmt_b->bindParam(':book_stt', $_POST['book_stt']);
+    $stmt_b->bindParam(':book_status', $book_status);
+
     $stmt_b->execute();
 
-    $query_pm = 'UPDATE phieumuon SET trangthai=:trangthai WHERE pm_stt=:pm_stt';
+
+    $query_pm = "UPDATE phieumuon SET trangthai=:trangthai WHERE pm_stt=:pm_stt";
     $stmt_p = $db->prepare($query_pm);
     $stmt_p->bindParam(':trangthai', $_POST['trangthai']);
     $stmt_p->bindParam(':pm_stt', $_POST['pm_stt']);
@@ -72,12 +77,12 @@ if (isset($_POST['submit'])) {
                             ORDER BY pm.pm_stt ASC");
         $query->bindValue(':phanloai', $phanloai);
         $query->execute();
-    } else{
+    } else {
         $query = $db->prepare("SELECT * FROM phieumuon pm 
                            INNER join quyensach qs on pm.book_stt = qs.book_stt
                            INNER join dausach ds on ds.title_id = qs.title_id
                            INNER join user u on u.user_id = pm.user_id ORDER BY pm.pm_stt DESC LIMIT $startFrom, $recordsPerPage");
-    $query->execute();
+        $query->execute();
     }
 } else {
     $query = $db->prepare("SELECT * FROM phieumuon pm 
@@ -96,8 +101,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         'course' => $row['course'],
         'sdt' => $row['sdt'],
         'email' => $row['email'],
-        'title_name' => $row['title_name'],
-        'title_author' => $row['title_author'],
+        // 'title_name' => $row['title_name'],
+        // 'title_author' => $row['title_author'],
         'pm_ngaymuon' => $row['pm_ngaymuon'],
         'pm_ngayhentra' => $row['pm_ngayhentra'],
         'trangthai' => $row['trangthai'],
@@ -114,13 +119,12 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Libary</title>
+    <title>Call Card</title>
     <link rel="shortcut icon" href="image/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/partials.css">
-    <link rel="stylesheet" href="css/loader.css">
     <link rel="stylesheet" href="css/manage.css">
 </head>
 
@@ -135,11 +139,26 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                 <div class="search input-group mb-3 mt-3">
                     <select class="form-select" name="phanloai" id="phanloai" onchange="this.form.submit()">
                         <option value="all">Phân loại theo</option>
-                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "all"){echo "selected";}?> value="all">Tất cả</option>
-                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "0"){echo "selected";}?> value="0">Chờ xử lý</option>
-                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "1"){echo "selected";}?> value="1">Đang mượn</option>
-                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "2"){echo "selected";}?> value="2">Đã trả</option>
-                        <option <?php if(isset($_GET['phanloai']) &&  $_GET['phanloai'] == "3"){echo "selected";}?> value="3">Đã hủy</option>
+                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "all") {
+                            echo "selected";
+                        } ?>
+                            value="all">Tất cả</option>
+                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "0") {
+                            echo "selected";
+                        } ?>
+                            value="0">Chờ xử lý</option>
+                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "1") {
+                            echo "selected";
+                        } ?>
+                            value="1">Đang mượn</option>
+                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "2") {
+                            echo "selected";
+                        } ?>
+                            value="2">Đã trả</option>
+                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "3") {
+                            echo "selected";
+                        } ?>
+                            value="3">Đã hủy</option>
                     </select>
                 </div>
             </form>
@@ -163,10 +182,9 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                 <tr>
                     <th>Số thứ tự</th>
                     <th>Người mượn</th>
-                    <th>Tên quyển sách</th>
-                    <th>Tác giả</th>
                     <th>Ngày mượn</th>
                     <th>Ngày hẹn trả</th>
+                    <th>Danh sách mượn</th>
                     <th>Trạng thái</th>
                     <th>Hủy</th>
                 </tr>
@@ -187,22 +205,36 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
                         </td>
                         <td>
-                            <?= $pm['title_name'] ?>
-                        </td>
-                        <td>
-                            <?= $pm['title_author'] ?>
-                        </td>
-                        <td>
                             <?= $pm['pm_ngaymuon'] ?>
                         </td>
                         <td>
                             <?= $pm['pm_ngayhentra'] ?>
                         </td>
+                        <td>
+                            <a href="#" class="btn btn-light">
+                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                            </a>
+                        </td>
+                        <?php
+                        // Lấy danh sách các quyển sách
+                        $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE pm_stt =:pm_stt');
+                        $query_pm->bindValue(':pm_stt', $pm["pm_stt"]);
+                        $query_pm->execute();
+                        $results_pm = $query_pm->fetchAll();
+                        $book_stt_array = array(); // Khởi tạo một mảng rỗng
+                
+                        foreach ($results_pm as $row) {
+                            $book_stt_array[] = $row['book_stt']; // Thêm giá trị của book_stt vào mảng
+                        }
+                        $book_stt_string = implode(", ", $book_stt_array); // Ghép các giá trị thành chuỗi
+                        ?>
                         <?php if ($pm['trangthai'] == 0): ?>
                             <td>
+
                                 <form action="manage_callcard.php" method="POST">
                                     <input id="book_status" name="book_status" hidden value="0"></input>
-                                    <input id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                    <input id="book_stt_string" name="book_stt_string" hidden
+                                        value="<?= $book_stt_string ?>"></input>
                                     <input id="trangthai" name="trangthai" hidden value="1"></input>
                                     <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
                                     <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
@@ -211,7 +243,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                             <td>
                                 <form action="manage_callcard.php" method="POST">
                                     <input id="book_status" name="book_status" hidden value="1"></input>
-                                    <input id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                    <input id="book_stt_string" name="book_stt_string" hidden
+                                        value="<?= $book_stt_string ?>"></input>
                                     <input id="trangthai" name="trangthai" hidden value="3"></input>
                                     <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
                                     <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
@@ -222,7 +255,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                             <td colspan="2">
                                 <form action="manage_callcard.php" method="POST">
                                     <input id="book_status" name="book_status" hidden value="1"></input>
-                                    <input id="book_stt" name="book_stt" hidden value="<?= $pm['book_stt'] ?>"></input>
+                                    <input id="book_stt_string" name="book_stt_string" hidden value="<?= $book_stt_string ?>"></input>
                                     <input id="trangthai" name="trangthai" hidden value="2"></input>
                                     <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
                                     <button type="submit" id="giveback" class="btn btn-success">Xác nhận trả</button>
@@ -243,16 +276,16 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <?php endif; ?>
     <?php
     echo '<ul class="pagination ';
-    if(!isset($_GET['phanloai'])){
+    if (!isset($_GET['phanloai'])) {
         if (isset($_POST['submit']) && !empty($keyword)) {
             echo 'disabled-ul';
-        }else{
+        } else {
             echo '';
         }
-    } else{
+    } else {
         if ((isset($_POST['submit']) && empty($keyword)) || $phanloai == "all") {
             echo '';
-        }else{
+        } else {
             echo 'disabled-ul';
         }
     }
@@ -341,13 +374,15 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
             var modal_user = document.createElement("div");
             modal_user.classList.add("modal_user");
-            modal_user.innerHTML = "<div><h2>Thông tin</h2></div><p>"
+            modal_user.innerHTML = "<div class='text-center'><h3>Thông tin</h3></div><p>"
+                + "<hr>"
                 + "<div><strong>ID: " + value1 + "</strong></div>"
                 + "<div><strong>Họ tên: " + value2 + "</strong></div>"
                 + "<div><strong>Lớp: " + value3 + "</strong></div>"
                 + "<div><strong>Khóa: " + value4 + "</strong></div>"
                 + "<div><strong>Số điện thoại: " + value5 + "</strong></div>"
                 + "<div><strong>Email: " + value6 + "</strong></div>"
+                + "<hr>"
                 + "</p><button onclick='hideModal()'>Đóng</button>";
             overlay.appendChild(modal_user);
             document.body.appendChild(overlay);
