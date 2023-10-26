@@ -8,23 +8,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 	$fullname = $_POST['fullname'];
+	$email = $_POST['email'];
 
-	$stmt = $db->prepare("SELECT username FROM user WHERE username=:username");
+	$stmt = $db->prepare("SELECT username, email FROM user WHERE username=:username OR email=:email");
 	$stmt->bindParam(':username', $username);
+	$stmt->bindParam(':email', $email);
 	$stmt->execute();
 
 
 	if ($stmt->rowCount() > 0) {
-		$error = "Tên đăng nhập đã được sử dụng";
+		$error = "Tên đăng nhập hoặc email đã tồn tại";
 	} else {
 
 		$stmt = $db->prepare('
-				INSERT INTO user (username, password, fullname)
-				VALUES (:username, :password, :fullname)
+				INSERT INTO user (username, password, fullname, email)
+				VALUES (:username, :password, :fullname, :email)
 				');
 		$stmt->bindParam(':username', $username);
 		$stmt->bindParam(':password', $password);
 		$stmt->bindParam(':fullname', $fullname);
+		$stmt->bindParam(':email', $email);
 
 		$stmt->execute();
 		header('location: login.php');
@@ -85,6 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 						</span>
 					</div>
 
+					<div class="wrap-input">
+						<input class="input" type="text" name="email" placeholder="Enter your email">
+						<span class="focus-input"></span>
+						<span class="symbol-input">
+							<i class="fa-solid fa-envelope"></i>
+						</span>
+					</div>
+
                     <div class="wrap-input">
 						<input class="input" type="password" name="password" id="password" placeholder="Enter your password">
 						<span class="focus-input"></span>
@@ -130,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!--===============================================================================================-->	
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
 <!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->
 	<script type="text/javascript" src="js/jquery.validate.js"></script>
@@ -141,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				rules: {
 					fullname: { required: true, minlength: 4, maxlength: 50 },
 					username: { required: true, minlength: 4, maxlength: 50 },
+					email: { required: true },
 					password: { required: true, minlength: 4, maxlength: 50 },
 					confirm_password: { required: true, minlength: 4, maxlength: 50, equalTo: "#password" }, email: { required: true, email: true },
 				},
@@ -155,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 						minlength: "Tên đăng nhập phải có ít nhất 4 - 50 ký tự",
 						maxlength: "Tên đăng nhập phải có ít nhất 4 - 50 ký tự"
 					},
+					email: "Email không hợp lệ",
 					password: {
 						required: "Bạn chưa nhập vào mật khẩu",
 						minlength: "Mật khẩu phải có ít nhất 4 - 50 ký tự",

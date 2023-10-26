@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     //Kiểm tra user
-    $stmt = $db->prepare('SELECT * FROM user WHERE username = :username');
+    $stmt = $db->prepare('SELECT * FROM user WHERE username = :username OR email = :username');
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endif ?>
 
 					<div class="wrap-input">
-						<input class="input" type="text" name="username" placeholder="Enter your username">
+						<input class="input" type="text" name="username" placeholder="Enter your username or email">
 						<span class="focus-input"></span>
 						<span class="symbol-input">
 							<i class="fa-solid fa-user" aria-hidden="true"></i>
