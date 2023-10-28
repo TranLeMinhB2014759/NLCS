@@ -13,26 +13,30 @@
                 </button>
                 <div class="collapse navbar-collapse flex-row-reverse" id="collapsibleNavbar">
                     <ul class="navbar-nav">
+                        <!-- Người dùng chưa có tài khoản -->
                         <?php if (!isset($_SESSION['user'])): ?>
                             <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>
+                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-solid fa-circle-info"></i></a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 2): ?>
+                        <!-- Admin -->
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
                             <li class="nav-item"><a class="nav-link" href="statistic.php">Statistics</a></li>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" id="navbardrop" data-bs-toggle="dropdown">
                                     Manage
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="manage_titles.php">Manage Titles</a>
                                     <a class="dropdown-item" href="manage_users.php">Manage Users</a>
+                                    <a class="dropdown-item" href="manage_titles.php">Manage Titles</a>
                                     <a class="dropdown-item" href="manage_callcard.php">Manage Call Cards</a>
                                     </div>
                             </li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a></li>
                         <?php endif ?>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0 || isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
+                        <!-- Người dùng có tài khoản -->
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] != 'admin'): ?>
                             <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <!-- Dropdown -->
                             <li class="nav-item dropdown">
@@ -50,6 +54,7 @@
                                     <a class="dropdown-item" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a>
                                 </div>
                             </li>
+                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-solid fa-circle-info"></i></a></li>
                         <?php endif ?>
                     </ul>
                 </div>

@@ -1,9 +1,9 @@
 <?php
 if (isset($_SESSION['user'])) {
-    if (($_SESSION['user']['role'] == 2)) {
+    if (($_SESSION['user']['role'] == 'admin')) {
         ///Có quyền admin
-    } if($_SESSION['user']['role'] == 0 || $_SESSION['user']['role'] == 1) {
-        header('location: 403.php');
+    } if($_SESSION['user']['role'] == 'student' || $_SESSION['user']['role'] == 'teacher') {
+        header('location: 403.html');
     }
 }
 else{

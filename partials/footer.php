@@ -20,14 +20,15 @@
                         <li><a href="login.php">Login</a></li>
                         <li><a href="register.php">Sign Up</a></li>
                     <?php endif ?>
-                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 2): ?>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
                         <li><a href="manage_titles.php">Manage Titles</a></li>
                         <li><a href="manage_users.php">Manage Users</a></li>
                         <li><a href="manage_callcard.php">Manage Call Cards</a></li>
                         <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>
                     <?php endif ?>
-                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0 || isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] != 'admin'): ?>
                         <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
+                        <li><a href="help.php">Help & Support</a></li>
                         <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>
                     <?php endif ?>
                 </ul>
