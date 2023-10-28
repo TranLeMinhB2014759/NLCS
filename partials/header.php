@@ -48,13 +48,13 @@
                                     <?php echo $_SESSION['user']['name'] ?>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="profile.php">Profile</i></a>
+                                    <a class="dropdown-item" href="profile.php"><i class="fa-regular fa-circle-user"></i> &nbsp My Profile</i></a>
                                     <!-- <a class="dropdown-item" href="#">Manage comments</i></a> -->
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a>
                                 </div>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-solid fa-circle-info"></i></a></li>
+                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-regular fa-circle-question"></i></a></li>
                         <?php endif ?>
                     </ul>
                 </div>
