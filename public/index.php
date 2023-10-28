@@ -5,15 +5,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $select_search = $_POST['select_search'];
     $keyword = $_POST['keyword'];
 
-    if($select_search === 'title_id'){
+    if ($select_search === 'title_id') {
         $query = $db->prepare('SELECT * FROM dausach WHERE title_id = :keyword ORDER BY title_id');
         $query->bindValue(':keyword', $keyword);
 
         $query->execute();
         $results = $query->fetchAll();
         $rows = $query->rowCount();
-    }
-    elseif ($select_search === 'title_name') {
+    } elseif ($select_search === 'title_name') {
         $query = $db->prepare('SELECT * FROM dausach WHERE title_name LIKE :keyword ORDER BY title_id');
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
 
@@ -44,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Libary</title>
+    <title>Library</title>
     <link rel="shortcut icon" href="image/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
@@ -56,16 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <?php 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo '<div id="loader-wrapper">
             <div id="loader"></div>
             <div class="loader-section section-left"></div>
             <div class="loader-section section-right"></div>
         </div>';
-        }
-     include '../partials/header.php';
-     ?>
+    }
+    include '../partials/header.php';
+    ?>
     <div class="container">
         <div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
@@ -126,7 +125,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </ul>
                         </div>
                     </div>
+                    <div class="group-box">
+                        <div class="title text-center" style="font-size: 25px">Hot Search</div>
+                        <div class="leftMenu">
+                            <ul>
+                                <?php
+                                $query_title_author = "SELECT * FROM dausach ORDER BY searched DESC LIMIT 6";
+                                $title_author = $db->query($query_title_author);
+                                $rank = 1;
+                                while ($hot_search = $title_author->fetch()) {
+                                    echo '<li style="font-weight:400; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden">
+                                    <a href="title_detail.php?title_id=' . htmlspecialchars($hot_search["title_id"]) . '"><b>' . $rank . '.</b> ' . htmlspecialchars($hot_search["title_name"]) . '</a>
+                                        </li>';
+                                    $rank++;
+                                }
+                                ?>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div class="mainContent col-sm-9" id="notification">
                     <div class="group-box min-height">
@@ -135,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="child-container">
                                 <div class="form-search">
-                                    <form method="POST">
+                                    <form method="POST" id="searchForm">
                                         <div class="search input-group mb-3 mt-3">
                                             <select class="form-select" width="48" id="select_search"
                                                 name="select_search">
@@ -146,7 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             </select>
                                             <input type="text" class="form-control" placeholder="Write Here..."
                                                 id="keyword" name="keyword">
-                                            <button class="btn btn-primary" type="submit" name="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                            <button class="btn btn-primary" type="submit" name="submit"><i
+                                                    class="fa-solid fa-magnifying-glass"></i></button>
                                         </div>
                                     </form>
                                 </div>
@@ -189,31 +208,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <!--===============================================================================================-->
-    <!-- <script type="text/javascript" src="js/index.js"></script> -->
-    <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
     <!--===============================================================================================-->
     <!-- <script src="js/DataTables-1.13.6/js/datatables.min.js"></script> -->
     <!--===============================================================================================-->
     <script>
-        // Button SrolltoTop
-            window.onscroll = function () { scrollFunction() };
-
-            function scrollFunction() {
-                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
-                    document.getElementById("myBtn").style.display = "block";
-                } else {
-                    document.getElementById("myBtn").style.display = "none";
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("searchForm").addEventListener("submit", function (event) {
+                var keyword = document.getElementById("keyword").value;
+                if (keyword.trim() === "") {
+                    event.preventDefault();
+                    alert("Keyword is required for the search.");
                 }
-            }
+            });
+        });
+    </script>
+    <script>
+        // Button SrolltoTop
+        window.onscroll = function () { scrollFunction() };
 
-            // When the user clicks on the button, scroll to the top of the document
-            function topFunction() {
-                document.body.scrollTop = 0;
-                document.documentElement.scrollTop = 0;
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
+                document.getElementById("myBtn").style.display = "block";
+            } else {
+                document.getElementById("myBtn").style.display = "none";
             }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
     </script>
 </body>
 <?php include '../partials/footer.php'; ?>
