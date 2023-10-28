@@ -1,0 +1,38 @@
+
+.big-title{
+    padding: 5px 0;
+}
+.main{
+    background: white;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+.article-content {
+    color: #554e44;
+    font-family: Verdana, Helvetica, sans-serif;
+    font-size: 16.3px;
+}
+
+.article-content h1 {
+    border-bottom: 3px solid #0073bc;
+    font-family: 'Verdana';
+    font-size: 1.2em;
+    color: #008bd1;
+    line-height: 1.5;
+    padding: 5px 0;
+}
+
+#accordion{
+    margin: 20px;
+}
+
+.img{
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    height: 250px;
+}
+
+#img{
+    border: 1px solid;
+}
