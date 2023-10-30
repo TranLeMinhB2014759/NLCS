@@ -207,11 +207,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
+    <script type="text/javascript" src="js/btnTotop.js"></script>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
-    <!--===============================================================================================-->
-    <!-- <script src="js/DataTables-1.13.6/js/datatables.min.js"></script> -->
     <!--===============================================================================================-->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -223,24 +222,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             });
         });
-    </script>
-    <script>
-        // Button SrolltoTop
-        window.onscroll = function () { scrollFunction() };
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
-                document.getElementById("myBtn").style.display = "block";
-            } else {
-                document.getElementById("myBtn").style.display = "none";
-            }
-        }
-
-        // When the user clicks on the button, scroll to the top of the document
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
     </script>
 </body>
 <?php include '../partials/footer.php'; ?>
