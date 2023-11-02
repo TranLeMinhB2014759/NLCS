@@ -54,7 +54,7 @@
                                     <a class="dropdown-item" href="logout.php">Logout &nbsp <i class="fa fa-sign-out"></i></a>
                                 </div>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-regular fa-circle-question"></i></a></li>
+                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support" style="cursor: help;"><i class="fa-regular fa-circle-question"></i></a></li>
                         <?php endif ?>
                     </ul>
                 </div>

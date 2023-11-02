@@ -355,8 +355,8 @@ label{
 #myBtn {
   display: none;
   position: fixed;
-  bottom: 10px;
-  right: 40px;
+  bottom: 30px;
+  right: 23px;
   z-index: 99;
   border: none;
   outline: none;
@@ -370,5 +370,5 @@ background-color: #555;
 }
 
 #myBtn img{
-  width: 68px;
+  width: 50px;
 }
