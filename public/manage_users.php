@@ -36,7 +36,8 @@ if (isset($_POST['submit1'])) {
     }
 }
 
-
+//--===============================================================================================--//
+//Pagination
 // Lấy số lượng bản ghi trong cơ sở dữ liệu
 $query_page = "SELECT COUNT(*) as total FROM user";
 $result = $db->query($query_page);
@@ -69,8 +70,8 @@ $data = [];
 if (isset($_POST['submit2'])) {
     $keyword = $_POST['keyword'];
     if (!empty($keyword)) {
-        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user WHERE user_id = :keyword");
-        $query->bindValue(':keyword', $keyword);
+        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user WHERE user_id LIKE :keyword OR username LIKE :keyword OR fullname LIKE :keyword");
+        $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
         $query->execute();
     } else {
         $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage");
@@ -120,8 +121,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <div class="title">
         QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG
     </div>
-    <div class="row container">
-        <div class="col-6 btn-modal">
+    <div class="row container form-search">
+        <div class="col-3 btn-modal">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" id="btn-modal"
                 title="Thêm tài khoản mới">
                 Thêm Tài Khoản Mới &nbsp<i class="fas fa-edit"></i>
@@ -146,12 +147,18 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                 <div class="mb-3 mt-3">
                                     <label for="username" class="form-label"><b>Username:</b></label>
                                     <input type="text" class="form-control" id="username" name="username"
-                                        placeholder="Enter your username">
+                                        placeholder="Enter your username" autocomplete="off">
                                 </div>
                                 <div class="mb-3 mt-3">
                                     <label for="password" class="form-label"><b>Password:</b></label>
                                     <input type="password" class="form-control" id="password" name="password"
                                         placeholder="Enter your password">
+                                </div>
+                                <div class="mb-3 mt-3">
+                                    <label for="email" class="form-label"><b>Email:</b>
+                                    </label>
+                                    <input type="text" class="form-control" id="email" name="email"
+                                        placeholder="Enter the email" autocomplete="off">
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-6">
@@ -169,39 +176,28 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                     <label for="sdt" class="form-label"><b>Phone Number:</b>
                                     </label>
                                     <input type="text" class="form-control" id="sdt" name="sdt"
-                                        placeholder="Enter the phone number">
+                                        placeholder="Enter the phone number" autocomplete="off">
                                 </div>
-                                <div class="mb-3 mt-3">
-                                    <label for="email" class="form-label"><b>Email:</b>
-                                    </label>
-                                    <input type="text" class="form-control" id="email" name="email"
-                                        placeholder="Enter the email">
-                                </div>
-                                <div class="row">
-                                    <div class="col-2">
-                                        <button type="submit" name="submit1" class="btn btn-primary btn-block">
-                                            OK
-                                        </button>
-                                    </div>
-                                    <div class="col-3">
-                                        <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                    <div class="col-5"></div>
-                                </div>
+                        </div>
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="submit" name="submit1" class="btn btn-primary btn-block">
+                                OK
+                            </button>
                             </form>
+                            <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <div class="col-6 form-search" style="padding: 0 60px;">
+        <div class="col-4"></div>
+        <div class="col-5" style="padding: 0 60px;">
             <form method="POST">
                 <div class="search input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Nhập vào ID..." id="keyword" name="keyword">
+                    <input type="text" class="form-control" placeholder="Nhập vào ID, username, tên đầy đủ..." id="keyword" name="keyword" autocomplete="off">
                     <button class="btn btn-primary" type="submit" name="submit2"><i
                             class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
@@ -249,7 +245,6 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                 <?php if ($user['sdt'] == 0): ?>
                                     <span>Chưa cập nhật</span>
                                 <?php else: ?>
-                                    (+84)
                                     <?= $user['sdt'] ?>
                                 <?php endif; ?>
                             </td>
@@ -314,14 +309,10 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     echo '</ul>';
     ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
-    <!--===============================================================================================-->
-    <!-- <script type="text/javascript" src="js/index.js"></script> -->
+    <script type="text/javascript" src="js/btnTotop.js"></script>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
-    <!--===============================================================================================-->
-    <!-- <script src="js/DataTables-1.13.6/js/datatables.min.js"></script> -->
     <!--===============================================================================================-->
     <script>
         //Delete user
@@ -331,24 +322,6 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
             }
             return false;
         });
-    </script>
-    <script>
-        // Button SrolltoTop
-        window.onscroll = function () { scrollFunction() };
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
-                document.getElementById("myBtn").style.display = "block";
-            } else {
-                document.getElementById("myBtn").style.display = "none";
-            }
-        }
-
-        // When the user clicks on the button, scroll to the top of the document
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
     </script>
     <script type="text/javascript" src="js/jquery.validate.js"></script>
     <script type="text/javascript">
@@ -360,7 +333,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                     password: { required: true, minlength: 4, maxlength: 50 },
                     class: { required: true, maxlength: 8 },
                     course: { required: true, minlength: 3 },
-                    sdt: { required: true, digits: true, minlength: 9, maxlength: 10 },
+                    sdt: { required: true, digits: true, minlength: 9, maxlength: 11 },
                     email: { required: true, minlength: 4, maxlength: 50 },
                 },
                 messages: {
@@ -385,13 +358,13 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                     },
                     course: {
                         required: "Bạn chưa nhập vào tên khóa",
-                        maxlength: "Tên khóa không có thật"
+                        minlength: "Tên khóa không có thật"
                     },
                     sdt: {
                         required: "Bạn chưa nhập vào số điện thoại",
                         digits: "Số điện thoại phải là một dãy số",
                         minlength: "Số điện thoại phải tử 9 chữ số",
-                        maxlength: "Số điện thoại tối đa 10 chữ số"
+                        maxlength: "Số điện thoại tối đa 11 chữ số"
                     },
                     email: "Email không hợp lệ",
                 },

@@ -130,7 +130,15 @@
     border-bottom: 1px solid;
 }
 
-.note{
+.note1{
+    color:red;
+    font-style: italic;
+    padding-left: 10px;
+    font-size: 14px;
+    display: none;
+}
+
+.note2{
     color:red;
     font-style: italic;
     padding-left: 10px;
@@ -174,4 +182,9 @@
     color: #666;
     box-shadow: inset 4px 4px 12px #c5c5c5,
                 inset -4px -4px 12px #ffffff;
+}
+
+#btnCallCard:disabled{
+    pointer-events: auto !important;
+    cursor: not-allowed !important;
 }

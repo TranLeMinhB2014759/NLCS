@@ -6,7 +6,7 @@ include '../partials/db_connect.php';
 if (isset($_GET['title_id'])) {
     $_SESSION['title']['title_id'] = $_GET['title_id'];
 
-    $query_check_id = "SELECT title_id FROM dausach WHERE title_id = :giaTri";
+    $query_check_id = "SELECT title_id, searched FROM dausach WHERE title_id = :giaTri";
     $title_check_id = $db->prepare($query_check_id);
     $title_check_id->bindParam(':giaTri', $_SESSION['title']['title_id'], PDO::PARAM_STR);
     $title_check_id->execute();
@@ -16,6 +16,15 @@ if (isset($_GET['title_id'])) {
         $query_title = "SELECT * FROM dausach WHERE title_id={$_SESSION['title']['title_id']}";
         $title = $db->query($query_title);
         $row = $title->fetch();
+        if (isset($_SERVER['HTTP_REFERER']) && stripos($_SERVER[ 'HTTP_REFERER' ], $_SERVER['REQUEST_URI']) !== true){
+            $current_searched = $row['searched'];
+            $new_searched = $current_searched + 1;
+
+            $query_searched = "UPDATE dausach SET searched=:searched WHERE title_id={$_SESSION['title']['title_id']}";
+            $stmt = $db->prepare($query_searched);
+            $stmt->bindParam(':searched', $new_searched, PDO::PARAM_INT);
+            $stmt->execute();
+        }
     } else {
         echo '<script>
         var confirmation = confirm("Mã sách bạn tìm không có trong cơ sở dữ liệu");
@@ -29,7 +38,6 @@ if (isset($_GET['title_id'])) {
 } else{
     header('location: ../');
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -84,6 +92,22 @@ if (isset($_GET['title_id'])) {
                             <h4>
                                 <?php echo '<b>Xuất bản năm: </b>' . htmlspecialchars($row['title_year']) . ''; ?>
                             </h4>
+                            <?php if (!isset($_SESSION['user'])): ?>
+                                <a id="button" href="login.php">
+                                    Đăng nhập để mượn sách
+                                    <div class="arrow-wrapper">
+                                        <div class="arrow"></div>
+                                    </div>
+                                </a>
+                            <?php else: ?>
+                                <a id="button" href="profile.php#tab2">
+                                    Mượn sách
+                                    <div class="arrow-wrapper">
+                                        <div class="arrow"></div>
+                                    </div>
+                                </a>
+                            <?php endif ?>
+
                         </div>
                         <div class="col-md-3" id="qrcode"></div>
                     </div>
@@ -94,10 +118,10 @@ if (isset($_GET['title_id'])) {
     <br>
     <div class="container">
         <div class="same-book-author">
-            <h3><strong>MỚI NHẤT</strong></h3>
+            <h3><strong>HOT SEARCH</strong></h3>
             <?php 
             echo '<div id="book" class="gallery">';
-            $query_title_author = "SELECT * FROM dausach ORDER BY title_id DESC LIMIT 4";
+            $query_title_author = "SELECT * FROM dausach ORDER BY searched DESC LIMIT 4";
             $title_author = $db->query($query_title_author);
 
             while ($rows = $title_author->fetch())  {
@@ -121,50 +145,6 @@ if (isset($_GET['title_id'])) {
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $.validator.addMethod("checkDate", function(value, element) {
-                var inputDate = new Date(value);
-                var currentDate = new Date();
-                var diffInDays = Math.floor((inputDate - currentDate) / (1000 * 60 * 60 * 24));
-                
-                return diffInDays <= 60;
-                }, "Ngày không được vượt quá 60 ngày sau ngày hiện tại.");
-            $.validator.addMethod("dateAfterToday", function(value, element) {
-                var currentDate = new Date();
-                var inputDate = new Date(value);
-
-                return inputDate > currentDate;
-                }, "Ngày hẹn trả phải sau ngày hiện tại");
-                    $("#pm").validate({
-            rules: {
-                book_return_date: {
-                    required: true,
-                    date: true,
-                    checkDate: true,
-                    dateAfterToday: true,
-                },
-            },
-            messages: {
-                book_return_date: {
-                required: "Vui lòng chọn ngày",
-                date: "Ngày không hợp lệ",
-                },
-            },
-            errorElement: "div",
-                errorPlacement: function (error, element) {
-                    error.addClass("invalid-feedback");
-                    error.insertAfter(element);
-                },
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass("is-invalid").removeClass("is-valid");
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).addClass("is-valid").removeClass("is-invalid");
-                },
-        });
-        });
-  </script>
     <!-- QR CODE -->
     <script type="text/javascript" src="js/convert_en.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.js"></script>

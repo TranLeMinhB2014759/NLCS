@@ -32,6 +32,8 @@ if (isset($_POST['submit1'])) {
     header("Location: " . $_SERVER['HTTP_REFERER']);
 }
 
+//--===============================================================================================--//
+//Pagination
 // Lấy số lượng bản ghi trong cơ sở dữ liệu
 $query_page = "SELECT COUNT(*) as total FROM dausach";
 $result = $db->query($query_page);
@@ -59,13 +61,14 @@ $result = $db->query($query_s_e);
 
 $startFrom = ($currentPage - 1) * $recordsPerPage;
 
+//--===============================================================================================--//
 //Láy dữ liệu Đầu sách
 $data = [];
 if (isset($_POST['submit2'])) {
     $keyword = $_POST['keyword'];
     if (!empty($keyword)) {
-        $query = $db->prepare("SELECT * FROM dausach WHERE title_id = :keyword");
-        $query->bindValue(':keyword', $keyword);
+        $query = $db->prepare("SELECT * FROM dausach WHERE title_id LIKE :keyword OR title_name LIKE :keyword");
+        $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
         $query->execute();
     } else {
         $query = $db->prepare("SELECT * FROM dausach LIMIT $startFrom, $recordsPerPage");
@@ -111,8 +114,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <div class="title">
         QUẢN LÝ SÁCH TRONG THƯ VIỆN
     </div>
-    <div class="row container">
-        <div class="col-6 btn-modal">
+    <div class="row container form-search">
+        <div class="col-3 btn-modal">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
                 id="btn-modal-book" title="Thêm tài khoản mới">
                 Thêm Đầu Sách &nbsp<i class="fas fa-edit"></i>
@@ -128,7 +131,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                         </div>
                         <!-- Modal body -->
                         <div class="modal-body">
-                            <form method="post" id="title" class="form-horizontal" enctype="multipart/form-data">
+                            <form method="post" id="title" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
                                 <div class="mb-3">
                                     <label for="title_name" class="form-label"><b>Tên sách:</b></label>
                                     <input type="text" class="form-control" id="title_name" name="title_name"
@@ -155,30 +158,27 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                     <input type='file' name='title_img' id='title_img'
                                         accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
                                 </div>
-                                <div class="mb-3 row">
-                                    <div class="col-2">
-                                        <button type="submit" name="submit1" class="btn btn-primary btn-block">
-                                            OK
-                                        </button>
-                                    </div>
-                                    <div class="col-3">
-                                        <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                    <div class="col-5"></div>
-                                </div>
+                        </div>
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="submit" name="submit1" class="btn btn-primary btn-block">
+                                OK
+                            </button>
                             </form>
+                            <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 form-search" style="padding: 0 60px;">
+        <div class="col-5"></div>
+        <div class="col-4" style="padding: 0 60px;">
             <form method="POST">
                 <div class="search input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Nhập vào mã đầu sách..." id="keyword"
-                        name="keyword">
+                    <input type="text" class="form-control" placeholder="Nhập vào mã số, tên sách..." id="keyword"
+                        name="keyword" autocomplete="off">
                     <button class="btn btn-primary" type="submit" name="submit2"><i
                             class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
@@ -267,11 +267,9 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     echo '</ul>';
     ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
-    <!--===============================================================================================-->
-    <!-- <script type="text/javascript" src="js/index.js"></script> -->
+    <script type="text/javascript" src="js/btnTotop.js"></script>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
     <!--===============================================================================================-->
     <script>
@@ -283,24 +281,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
             return false;
         });
     </script>
-    <script>
-        // Button SrolltoTop
-        window.onscroll = function () { scrollFunction() };
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 300) {
-                document.getElementById("myBtn").style.display = "block";
-            } else {
-                document.getElementById("myBtn").style.display = "none";
-            }
-        }
-
-        // When the user clicks on the button, scroll to the top of the document
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    </script>
+    <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery.validate.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
