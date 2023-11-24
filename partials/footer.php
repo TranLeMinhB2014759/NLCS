@@ -22,7 +22,8 @@
                     <?php endif ?>
                     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
                         <li><a href="manage_titles.php">Manage Titles</a></li>
-                        <li><a href="manage_users.php">Manage Users</a></li>
+                        <li><a href="manage_users_student.php">Manage Students</a></li>
+                        <li><a href="manage_users_student.php">Manage Teachers</a></li>
                         <li><a href="manage_callcard.php">Manage Call Cards</a></li>
                         <li><a href="logout.php">Logout &nbsp <i class="fa-solid fa-right-from-bracket"></i></a></li>
                     <?php endif ?>

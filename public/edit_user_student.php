@@ -11,7 +11,6 @@ if (isset($_POST['id'])) {
     $course = $_POST['u_course'];
     $sdt = $_POST['u_sdt'];
     $email = $_POST['u_email'];
-    $role = $_POST['u_role'];
 
     if (empty($_FILES['u_avatar']['name'])) {
         //Lưu ảnh vào floder avatar
@@ -28,7 +27,7 @@ if (isset($_POST['id'])) {
     }
 
 
-    $query = 'UPDATE user SET username=?, fullname=?, password=?, class=?, course=?, sdt=?, email=?, role=?, file_avatar=? WHERE user_id=?';
+    $query = 'UPDATE user SET username=?, fullname=?, password=?, class=?, course=?, sdt=?, email=?, file_avatar=? WHERE user_id=?';
     $stmt = $db->prepare($query);
     $stmt->execute([
         $username,
@@ -38,7 +37,6 @@ if (isset($_POST['id'])) {
         $course,
         $sdt,
         $email,
-        $role,
         $_FILES["u_avatar"]["name"],
         $_POST['id']
     ]);
@@ -71,10 +69,10 @@ if (isset($_POST['id'])) {
                     <h2>Chỉnh sửa thông tin người dùng</h2>
                 </div>
                 <?php if (isset($_GET['id'])) {
-                    $query = "SELECT user_id, fullname, username, password, class, course, sdt, email, role, file_avatar FROM user WHERE user_id={$_GET['id']}";
+                    $query = "SELECT user_id, fullname, username, password, class, course, sdt, email, file_avatar FROM user WHERE user_id={$_GET['id']}";
                     $ch = $db->query($query);
                     $row = $ch->fetch();
-                    echo "<form action='edit_user.php' method='post'id='edit' class='form-horizontal' enctype='multipart/form-data'>
+                    echo "<form action='edit_user_student.php' method='post'id='edit' class='form-horizontal' enctype='multipart/form-data'>
                         <div class='mb-3'>
                             <label for='u_fullname'><b>Your Name:</b></label>
                             <input class='form-control' id='u_fullname' name='u_fullname'
@@ -109,26 +107,6 @@ if (isset($_POST['id'])) {
                             <input type='email' class='form-control' id='u_email' name='u_email' placeholder='Enter the email'
                                 value='" . $row["email"] . "'>
                         </div>";
-                    if($_GET['id'] != "1"){
-                    echo "
-                        <div class='mb-3 mt-3'><b>Chức vụ:</b></label>
-                            <select class='form-select' name='u_role' id='u_role'>
-                                <option value='" . $row['role'] . "'>";
-                                if ($row['role'] == 'student') {
-                                    echo "Sinh viên";
-                                } elseif ($row['role'] == 'teacher') {
-                                    echo "Giảng viên";
-                                } else {
-                                    echo "Khác";
-                                }
-                                echo "
-                                </option>
-                                <option value='student'>Sinh viên</option>
-                                <option value='teacher'>Giảng viên</option>
-                                <option value='other'>Khác</option>
-                            </select>
-                        </div>";
-                    }
                     echo"
                         <div class='mb-3 mt-3'>
                         <div style='left: 60px'>
@@ -145,7 +123,7 @@ if (isset($_POST['id'])) {
                                 <button type='submit' class='btn btn-primary' name='btn-edit'>Sửa</button>
                             </div>
                             <div class='col-3'>
-                                <a href='manage_users.php' class='btn btn-info'> Quay lại</a>
+                                <a href='manage_users_student.php' class='btn btn-info'> Quay lại</a>
                             </div>
                             <div class='col-7'>
                             </div>
@@ -158,7 +136,7 @@ if (isset($_POST['id'])) {
                 <div class='success'>
                     <div class='text-center'><h2>Đã sửa thành công</h2></div>
                     <div class='back'>
-                        <a href='manage_users.php' class='btn btn-info'> Quay lại</a>
+                        <a href='manage_users_student.php' class='btn btn-info'> Quay lại</a>
                     </div>
                 </div>
                 ";

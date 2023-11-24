@@ -12,6 +12,7 @@ if (isset($_POST['submit1'])) {
     $course = $_POST['course'];
     $sdt = $_POST['sdt'];
     $email = $_POST['email'];
+    $role = "student";
 
     $stmt = $db->prepare("SELECT username FROM user WHERE username=:username");
     $stmt->bindParam(':username', $username);
@@ -21,8 +22,8 @@ if (isset($_POST['submit1'])) {
         $error = "Tên đăng nhập đã được sử dụng";
     } else {
         $stmt = $db->prepare('
-				INSERT INTO user (username, password, fullname, class, course, sdt, email)
-				VALUES (:username, :password, :fullname, :class, :course, :sdt, :email)
+				INSERT INTO user (username, password, fullname, class, course, sdt, email, role)
+				VALUES (:username, :password, :fullname, :class, :course, :sdt, :email, :role)
 				');
         $stmt->bindParam(':fullname', $fullname);
         $stmt->bindParam(':username', $username);
@@ -31,6 +32,7 @@ if (isset($_POST['submit1'])) {
         $stmt->bindParam(':course', $course);
         $stmt->bindParam(':sdt', $sdt);
         $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':role', $role);
         $stmt->execute();
         header("Location: " . $_SERVER['HTTP_REFERER']);
     }
@@ -39,7 +41,7 @@ if (isset($_POST['submit1'])) {
 //--===============================================================================================--//
 //Pagination
 // Lấy số lượng bản ghi trong cơ sở dữ liệu
-$query_page = "SELECT COUNT(*) as total FROM user";
+$query_page = "SELECT COUNT(*) as total FROM user WHERE role = 'student'";
 $result = $db->query($query_page);
 $row_page = $result->fetch(PDO::FETCH_ASSOC);
 $totalRecords = $row_page['total'];
@@ -70,15 +72,15 @@ $data = [];
 if (isset($_POST['submit2'])) {
     $keyword = $_POST['keyword'];
     if (!empty($keyword)) {
-        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user WHERE user_id LIKE :keyword OR username LIKE :keyword OR fullname LIKE :keyword");
+        $query = $db->prepare("SELECT * FROM user WHERE role = 'student' AND user_id LIKE :keyword OR role = 'student' AND username LIKE :keyword OR role = 'student' AND fullname LIKE :keyword");
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
         $query->execute();
     } else {
-        $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage");
+        $query = $db->prepare("SELECT * FROM user WHERE role = 'student' LIMIT $startFrom, $recordsPerPage");
         $query->execute();
     }
 } else {
-    $query = $db->prepare("SELECT user_id, username, password, fullname, class, course, sdt, email, file_avatar FROM user LIMIT $startFrom, $recordsPerPage");
+    $query = $db->prepare("SELECT * FROM user WHERE role = 'student' LIMIT $startFrom, $recordsPerPage");
     $query->execute();
 }
 
@@ -93,6 +95,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         'sdt' => $row['sdt'],
         'email' => $row['email'],
         'file_avatar' => $row['file_avatar'],
+        'role' => $row['role'],
     );
 }
 
@@ -118,12 +121,12 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
 <body>
     <?php include '../partials/header.php'; ?>
-    <h3 class="title-comm"><span class="title-holder">QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG</span></h3>
+    <h3 class="title-comm"><span class="title-holder">QUẢN LÝ TÀI KHOẢN SINH VIÊN</span></h3>
     <div class="row container form-search">
         <div class="col-3 btn-modal">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" id="btn-modal"
                 title="Thêm tài khoản mới">
-                Thêm Tài Khoản Mới &nbsp<i class="fas fa-edit"></i>
+                Thêm Tài Sinh Viên &nbsp<i class="fas fa-edit"></i>
             </button>
             <!-- The Modal -->
             <div class="modal" id="modal">
@@ -223,7 +226,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                 </thead>
                 <tbody>
                     <?php foreach ($data as $user): ?>
-                        <?php if ($user['user_id'] != 1): ?>
+                        <?php if ($user['user_id']): ?>
                             <tr>
                                 <td>
                                     <?= $user['user_id'] ?>
@@ -258,7 +261,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                     <?php endif; ?>
                                 </td>
                                 <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
-                                <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
+                                <td><a href="edit_user_student.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
                                 <td>
                                     <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger'
                                         id='btn_delete'>Delete</a>

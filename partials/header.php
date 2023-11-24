@@ -28,7 +28,8 @@
                                     Manage
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="manage_users.php">Manage Users</a>
+                                    <a class="dropdown-item" href="manage_users_student.php">Manage Students</a>
+                                    <a class="dropdown-item" href="manage_users_teacher.php">Manage Teachers</a>
                                     <a class="dropdown-item" href="manage_titles.php">Manage Titles</a>
                                     <a class="dropdown-item" href="manage_callcard.php">Manage Call Cards</a>
                                     </div>
