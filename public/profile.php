@@ -347,6 +347,7 @@ $rows_c = $query_cancelled->rowCount();
                                 <?php echo $_SESSION['user']['username'] ?>
                             </div>
 
+                            <?php if ($_SESSION['user']['role'] == "student"): ?>
                             <!-- Class -->
                             <div>
                                 <label for="class" class="form-label">Class:</label>
@@ -368,6 +369,7 @@ $rows_c = $query_cancelled->rowCount();
                                 }
                                 ?>
                             </div>
+                            <?php endif?>
 
                             <!-- Số điện thoại -->
                             <div>
