@@ -111,9 +111,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
 <body>
     <?php include '../partials/header.php'; ?>
-    <div class="title">
-        QUẢN LÝ SÁCH TRONG THƯ VIỆN
-    </div>
+        <h3 class="title-comm"><span class="title-holder">QUẢN LÝ SÁCH TRONG THƯ VIỆN</span></h3>
     <div class="row container form-search">
         <div class="col-3 btn-modal">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
@@ -131,7 +129,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                         </div>
                         <!-- Modal body -->
                         <div class="modal-body">
-                            <form method="post" id="title" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
+                            <form method="post" id="title" class="form-horizontal" enctype="multipart/form-data"
+                                autocomplete="off">
                                 <div class="mb-3">
                                     <label for="title_name" class="form-label"><b>Tên sách:</b></label>
                                     <input type="text" class="form-control" id="title_name" name="title_name"
@@ -189,46 +188,49 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <?php if ($query->rowCount() > 0): ?>
         <div class="container-m">
             <table>
-                <tr>
-                    <th>Mã số</th>
-                    <th>Tên đầu sách</th>
-                    <th>Tác giả</th>
-                    <th>Thể loại</th>
-                    <th>Xuất bản</th>
-                    <th>Ảnh</th>
-                    <th>Số lượng</th>
-                    <th>Sửa</th>
-                    <th>Xóa</th>
-                </tr>
-
-                <?php foreach ($data as $title): ?>
+                <thead>
                     <tr>
-                        <td>
-                            <?= $title['title_id'] ?>
-                        </td>
-                        <td>
-                            <?= $title['title_name'] ?>
-                        </td>
-                        <td>
-                            <?= $title['title_author'] ?>
-                        </td>
-                        <td>
-                            <?= $title['title_type'] ?>
-                        </td>
-                        <td>
-                            <?= $title['title_year'] ?>
-                        </td>
-                        <td style="background: white"><img src='uploads/<?= $title['title_img'] ?>'></td>
-                        <td><a href="book.php?title_id=<?= $title['title_id'] ?>" class='btn btn-light'><i
-                                    class="fa-solid fa-eye"></i> Xem chi tiết</a></td>
-                        <td><a href="edit_title.php?id=<?= $title['title_id'] ?>" class='btn btn-warning'>Edit</a></td>
-                        <td>
-                            <a href="delete_title.php?id=<?= $title['title_id'] ?>" class='btn btn-danger'
-                                id='btn_delete'>Delete</a>
-                        </td>
-                    <tr>
-                    <?php endforeach; ?>
-                </tr>
+                        <th>Mã số</th>
+                        <th>Tên đầu sách</th>
+                        <th>Tác giả</th>
+                        <th>Thể loại</th>
+                        <th>Xuất bản</th>
+                        <th>Ảnh</th>
+                        <th>Số lượng</th>
+                        <th>Sửa</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data as $title): ?>
+                        <tr>
+                            <td>
+                                <?= $title['title_id'] ?>
+                            </td>
+                            <td>
+                                <?= $title['title_name'] ?>
+                            </td>
+                            <td>
+                                <?= $title['title_author'] ?>
+                            </td>
+                            <td>
+                                <?= $title['title_type'] ?>
+                            </td>
+                            <td>
+                                <?= $title['title_year'] ?>
+                            </td>
+                            <td style="background: white"><img src='uploads/<?= $title['title_img'] ?>'></td>
+                            <td><a href="book.php?title_id=<?= $title['title_id'] ?>" class='btn btn-light'><i
+                                        class="fa-solid fa-eye"></i> Xem chi tiết</a></td>
+                            <td><a href="edit_title.php?id=<?= $title['title_id'] ?>" class='btn btn-warning'>Edit</a></td>
+                            <td>
+                                <a href="delete_title.php?id=<?= $title['title_id'] ?>" class='btn btn-danger'
+                                    id='btn_delete'>Delete</a>
+                            </td>
+                        <tr>
+                        <?php endforeach; ?>
+                    </tr>
+                </tbody>
             </table>
         </div>
     <?php else:

@@ -16,7 +16,7 @@ if (isset($_POST['book_stt_string'])) {
     $book_stts = explode(', ', $book_stt_string);
     $title_ids = explode(', ', $title_id_string);
     //Lấy title_id làm key và update theo book_stt
-    foreach ($title_ids as  $key => $title_id) {
+    foreach ($title_ids as $key => $title_id) {
         $book_stt = $book_stts[$key];
         $query_book = "UPDATE quyensach SET book_status = :book_status WHERE book_stt = :book_stt AND title_id = :title_id";
         $stmt_b = $db->prepare($query_book);
@@ -151,9 +151,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
 <body>
     <?php include '../partials/header.php'; ?>
-    <div class="title">
-        QUẢN LÝ PHIẾU MƯỢN SÁCH
-    </div>
+    <h3 class="title-comm"><span class="title-holder">QUẢN LÝ PHIẾU MƯỢN SÁCH</span></h3>
     <div class="container form-search row" style="padding: 0 60px;">
         <div class="col-3">
             <form>
@@ -200,110 +198,121 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <?php if ($query->rowCount() > 0): ?>
         <div class="container-m">
             <table>
-                <tr>
-                    <th>Số thứ tự</th>
-                    <th>Người mượn</th>
-                    <th>Ngày mượn</th>
-                    <th>Ngày trả</th>
-                    <th>Danh sách mượn</th>
-                    <th>Trạng thái</th>
-                    <th>Hủy</th>
-                </tr>
-                <?php foreach ($data as $pm): ?>
+                <thead>
                     <tr>
-                        <td>
-                            <?= $pm['pm_stt'] ?>
-                        </td>
-                        <td>
-                            <a href="#" class="btn btn-light" onclick="check_user('<?= $pm['user_id'] ?>',
+                        <th>Số thứ tự</th>
+                        <th>Người mượn</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày trả</th>
+                        <th>Danh sách mượn</th>
+                        <th>Trạng thái</th>
+                        <th>Hủy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data as $pm): ?>
+                        <tr>
+                            <td>
+                                <?= $pm['pm_stt'] ?>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-light" onclick="check_user('<?= $pm['user_id'] ?>',
                                                         '<?= $pm['fullname'] ?>',
                                                         '<?= $pm['class'] ?>',
                                                         '<?= $pm['course'] ?>',
                                                         '0<?= $pm['sdt'] ?>',
                                                         '<?= $pm['email'] ?>',)">
-                                <?= $pm['fullname'] ?>
-                            </a>
+                                    <?= $pm['fullname'] ?>
+                                </a>
 
-                        </td>
-                        <td>
-                            <?= $pm['pm_ngaymuon'] ?>
-                        </td>
-                        <td>
-                            <?= $pm['pm_ngayhentra'] ?>
-                        </td>
-                        <td>
-                            <a href="#" class="btn btn-light" onclick="check_list_book(<?= $pm['pm_stt']?>)">
-                                <i class="fa-solid fa-eye"></i> Xem chi tiết
-                            </a>
-                        </td>
-                        <?php
-                        // Lấy danh sách các quyển sách
-                        $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE pm_stt =:pm_stt');
-                        $query_pm->bindValue(':pm_stt', $pm["pm_stt"]);
-                        $query_pm->execute();
-                        $results_pm = $query_pm->fetchAll();
-                        $book_stt_array = array();
-                        $title_id_array = array();// Khởi tạo một mảng rỗng
-                
-                        foreach ($results_pm as $row) {
-                            $book_stt_array[] = $row['book_stt'];
-                            $title_id_array[] = $row['title_id']; // Thêm giá trị của book_stt vào mảng
-                        }
-                        $book_stt_string = implode(", ", $book_stt_array);
-                        $title_id_string = implode(", ", $title_id_array); // Ghép các giá trị thành chuỗi
-                        ?>
-                        <?php if ($pm['trangthai'] == 0): ?>
-                            <td>
-
-                                <form action="manage_callcard.php" method="POST">
-                                    <input id="book_status" name="book_status" hidden value="0"></input>
-                                    <input id="book_stt_string" name="book_stt_string" hidden value="<?= $book_stt_string ?>"></input>
-                                    <input id="title_id_string" name="title_id_string" hidden value="<?= $title_id_string ?>"></input>
-                                    <input id="trangthai" name="trangthai" hidden value="1"></input>
-                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?= date('d-m-Y')?>"></input>
-                                <?php if ($pm['role'] == "student"): ?>
-                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value="<?= date('d-m-Y', strtotime("+14 days")) ?>"></input>
-                                <?php elseif ($pm['role'] == "teacher"): ?>
-                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value="<?= date('d-m-Y', strtotime("+56 days")) ?>"></input>
-                                <?php endif; ?>
-                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                    <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
-                                </form>
                             </td>
                             <td>
-                                <form action="manage_callcard.php" method="POST">
-                                    <input id="book_status" name="book_status" hidden value="1"></input>
-                                    <input id="book_stt_string" name="book_stt_string" hidden value="<?= $book_stt_string ?>"></input>
-                                    <input id="title_id_string" name="title_id_string" hidden value="<?= $title_id_string ?>"></input>
-                                    <input id="trangthai" name="trangthai" hidden value="3"></input>
-                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value=""></input>
-                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value=""></input>
-                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                    <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
-                                </form>
+                                <?= $pm['pm_ngaymuon'] ?>
                             </td>
+                            <td>
+                                <?= $pm['pm_ngayhentra'] ?>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-light" onclick="check_list_book(<?= $pm['pm_stt'] ?>)">
+                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                </a>
+                            </td>
+                            <?php
+                            // Lấy danh sách các quyển sách
+                            $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE pm_stt =:pm_stt');
+                            $query_pm->bindValue(':pm_stt', $pm["pm_stt"]);
+                            $query_pm->execute();
+                            $results_pm = $query_pm->fetchAll();
+                            $book_stt_array = array();
+                            $title_id_array = array(); // Khởi tạo một mảng rỗng
+                    
+                            foreach ($results_pm as $row) {
+                                $book_stt_array[] = $row['book_stt'];
+                                $title_id_array[] = $row['title_id']; // Thêm giá trị của book_stt vào mảng
+                            }
+                            $book_stt_string = implode(", ", $book_stt_array);
+                            $title_id_string = implode(", ", $title_id_array); // Ghép các giá trị thành chuỗi
+                            ?>
+                            <?php if ($pm['trangthai'] == 0): ?>
+                                <td>
 
-                        <?php elseif ($pm['trangthai'] == 1): ?>
-                            <td colspan="2">
-                                <form action="manage_callcard.php" method="POST">
-                                    <input id="book_status" name="book_status" hidden value="1"></input>
-                                    <input id="book_stt_string" name="book_stt_string" hidden value="<?= $book_stt_string ?>"></input>
-                                    <input id="title_id_string" name="title_id_string" hidden value="<?= $title_id_string ?>"></input>
-                                    <input id="trangthai" name="trangthai" hidden value="2"></input>
-                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?=$pm['pm_ngaymuon']?>"></input>
-                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value="<?= date('d-m-Y') ?>"></input>
-                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                    <button type="submit" id="giveback" class="btn btn-success">Xác nhận trả</button>
-                                </form>
-                            </td>
-                        <?php elseif ($pm['trangthai'] == 2): ?>
-                            <td colspan="2" style="color: green">Đã trả</td>
-                        <?php elseif ($pm['trangthai'] == 3): ?>
-                            <td colspan="2" style="color: red">Đã hủy</td>
-                        <?php endif; ?>
-                    <tr>
-                    <?php endforeach; ?>
-                </tr>
+                                    <form action="manage_callcard.php" method="POST">
+                                        <input id="book_status" name="book_status" hidden value="0"></input>
+                                        <input id="book_stt_string" name="book_stt_string" hidden
+                                            value="<?= $book_stt_string ?>"></input>
+                                        <input id="title_id_string" name="title_id_string" hidden
+                                            value="<?= $title_id_string ?>"></input>
+                                        <input id="trangthai" name="trangthai" hidden value="1"></input>
+                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?= date('d-m-Y') ?>"></input>
+                                        <?php if ($pm['role'] == "student"): ?>
+                                            <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
+                                                value="<?= date('d-m-Y', strtotime("+14 days")) ?>"></input>
+                                        <?php elseif ($pm['role'] == "teacher"): ?>
+                                            <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
+                                                value="<?= date('d-m-Y', strtotime("+56 days")) ?>"></input>
+                                        <?php endif; ?>
+                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                        <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="manage_callcard.php" method="POST">
+                                        <input id="book_status" name="book_status" hidden value="1"></input>
+                                        <input id="book_stt_string" name="book_stt_string" hidden
+                                            value="<?= $book_stt_string ?>"></input>
+                                        <input id="title_id_string" name="title_id_string" hidden
+                                            value="<?= $title_id_string ?>"></input>
+                                        <input id="trangthai" name="trangthai" hidden value="3"></input>
+                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value=""></input>
+                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value=""></input>
+                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                        <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
+                                    </form>
+                                </td>
+
+                            <?php elseif ($pm['trangthai'] == 1): ?>
+                                <td colspan="2">
+                                    <form action="manage_callcard.php" method="POST">
+                                        <input id="book_status" name="book_status" hidden value="1"></input>
+                                        <input id="book_stt_string" name="book_stt_string" hidden
+                                            value="<?= $book_stt_string ?>"></input>
+                                        <input id="title_id_string" name="title_id_string" hidden
+                                            value="<?= $title_id_string ?>"></input>
+                                        <input id="trangthai" name="trangthai" hidden value="2"></input>
+                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?= $pm['pm_ngaymuon'] ?>"></input>
+                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value="<?= date('d-m-Y') ?>"></input>
+                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                        <button type="submit" id="giveback" class="btn btn-success">Xác nhận trả</button>
+                                    </form>
+                                </td>
+                            <?php elseif ($pm['trangthai'] == 2): ?>
+                                <td colspan="2" style="color: green">Đã trả</td>
+                            <?php elseif ($pm['trangthai'] == 3): ?>
+                                <td colspan="2" style="color: red">Đã hủy</td>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </tr>
+                </tbody>
             </table>
         </div>
     <?php else:
@@ -349,7 +358,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
         echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
     }
-    echo '</ul>';   
+    echo '</ul>';
     ?>
     <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <script type="text/javascript" src="js/btnTotop.js"></script>
@@ -390,7 +399,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
             var modal_user = document.createElement("div");
             modal_user.classList.add("modal_user");
-            modal_user.innerHTML = "<div class='text-center'><h3>Thông tin</h3></div><p>"
+            modal_user.innerHTML = "<div class='text-center'><h3>Thông tin</h3></div>"
                 + "<hr>"
                 + "<div><strong>ID: " + value1 + "</strong></div>"
                 + "<div><strong>Họ tên: " + value2 + "</strong></div>"
@@ -399,7 +408,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                 + "<div><strong>Số điện thoại: " + value5 + "</strong></div>"
                 + "<div><strong>Email: " + value6 + "</strong></div>"
                 + "<hr>"
-                + "</p><button id='hideModal' onclick='hideModal()'>Đóng</button>";
+                + "</p><button class='btn btn-danger' id='hideModal' onclick='hideModal()'>Đóng</button>";
             overlay.appendChild(modal_user);
             document.body.appendChild(overlay);
         }
@@ -410,21 +419,21 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
             var modal_list_book = document.createElement("div");
             modal_list_book.classList.add("modal_list_book");
-            modal_list_book.innerHTML = "<div class='text-center'><h3>Danh sách mượn</h3></div><p><hr></p>";
+            modal_list_book.innerHTML = "<div class='text-center'><h3>Danh sách mượn</h3></div><hr>";
 
             // Sử dụng jQuery để gửi giá trị 'value' đến tệp PHP
             const data = await $.get('ajax.php', { value: value });
-                modal_list_book.innerHTML += data;
-                modal_list_book.innerHTML += "<hr><button id='hideModal' onclick='hideModal()'>Đóng</button>";
-                overlay.appendChild(modal_list_book);
-                document.body.appendChild(overlay);
+            modal_list_book.innerHTML += data;
+            modal_list_book.innerHTML += "<hr><button class='btn btn-danger' id='hideModal' onclick='hideModal()'>Đóng</button>";
+            overlay.appendChild(modal_list_book);
+            document.body.appendChild(overlay);
         }
 
         function hideModal() {
             var overlay = document.querySelector(".overlay");
             overlay.parentNode.removeChild(overlay);
         }
-        
+
     </script>
 </body>
 

@@ -9,7 +9,8 @@ include '../partials/check_admin.php';
         $query_pm_list->bindValue(':pm_stt', $value);
         $query_pm_list->execute();
         $results_pm_list = $query_pm_list->fetchAll();
-        echo '<table>
+        echo '<div class="modal_ajax">
+                <table>
                     <tr>
                         <th>Đầu sách</th>
                         <th>Mã sách</th>
@@ -22,7 +23,8 @@ include '../partials/check_admin.php';
                                 echo "<tr><td>" . $value_title_id . " </td> " . "<td> CNTT." . $value_title_id . str_pad($value_book_stt, 3, '0', STR_PAD_LEFT) . "</td></tr>";
                             }
                         }
-        echo '</table>';
+        echo '  </table>
+            </div>';
     }
     if (isset($_POST['student'])) {
 

@@ -118,9 +118,7 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
 <body>
     <?php include '../partials/header.php'; ?>
-    <div class="title">
-        QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG
-    </div>
+    <h3 class="title-comm"><span class="title-holder">QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG</span></h3>
     <div class="row container form-search">
         <div class="col-3 btn-modal">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" id="btn-modal"
@@ -197,7 +195,8 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         <div class="col-5" style="padding: 0 60px;">
             <form method="POST">
                 <div class="search input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Nhập vào ID, username, tên đầy đủ..." id="keyword" name="keyword" autocomplete="off">
+                    <input type="text" class="form-control" placeholder="Nhập vào ID, username, tên đầy đủ..."
+                        id="keyword" name="keyword" autocomplete="off">
                     <button class="btn btn-primary" type="submit" name="submit2"><i
                             class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
@@ -207,69 +206,75 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <?php if ($query->rowCount() > 0): ?>
         <div class="container-m">
             <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Fullname</th>
-                    <th>Class</th>
-                    <th>Course</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
-                    <th>Avatar</th>
-                    <th>Sửa</th>
-                    <th>Xóa</th>
-                </tr>
-                <?php foreach ($data as $user): ?>
-                    <?php if ($user['user_id'] != 1): ?>
-                        <tr>
-                            <td>
-                                <?= $user['user_id'] ?>
-                            </td>
-                            <td>
-                                <?= $user['username'] ?>
-                            </td>
-                            <td>
-                                <?= $user['password'] ?>
-                            </td>
-                            <td>
-                                <?= $user['fullname'] ?>
-                            </td>
-                            <td>
-                                <?= $user['class'] ?>
-                            </td>
-                            <td>
-                                <?= $user['course'] ?>
-                            </td>
-                            <td>
-                                <?php if ($user['sdt'] == 0): ?>
-                                    <span>Chưa cập nhật</span>
-                                <?php else: ?>
-                                    <?= $user['sdt'] ?>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if ($user['email'] == 0): ?>
-                                    <span>Chưa cập nhật</span>
-                                <?php else: ?>
-                                    <?= $user['email'] ?>
-                                <?php endif; ?>
-                            </td>
-                            <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
-                            <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
-                            <td>
-                                <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger'
-                                    id='btn_delete'>Delete</a>
-                            </td>
-                        <tr>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Fullname</th>
+                        <th>Class</th>
+                        <th>Course</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Avatar</th>
+                        <th>Sửa</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data as $user): ?>
+                        <?php if ($user['user_id'] != 1): ?>
+                            <tr>
+                                <td>
+                                    <?= $user['user_id'] ?>
+                                </td>
+                                <td>
+                                    <?= $user['username'] ?>
+                                </td>
+                                <td>
+                                    <?= $user['password'] ?>
+                                </td>
+                                <td>
+                                    <?= $user['fullname'] ?>
+                                </td>
+                                <td>
+                                    <?= $user['class'] ?>
+                                </td>
+                                <td>
+                                    <?= $user['course'] ?>
+                                </td>
+                                <td>
+                                    <?php if ($user['sdt'] == 0): ?>
+                                        <span>Chưa cập nhật</span>
+                                    <?php else: ?>
+                                        <?= $user['sdt'] ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($user['email'] == 0): ?>
+                                        <span>Chưa cập nhật</span>
+                                    <?php else: ?>
+                                        <?= $user['email'] ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td><img class='rounded-circle' src='avatar/<?= $user['file_avatar'] ?>'></td>
+                                <td><a href="edit_user.php?id=<?= $user['user_id'] ?>" class='btn btn-warning'>Edit</a></td>
+                                <td>
+                                    <a href="delete_user.php?id=<?= $user['user_id'] ?>" class='btn btn-danger'
+                                        id='btn_delete'>Delete</a>
+                                </td>
+                            </tr>
                         <?php else: ?>
-                            <td>
-                                <?= $user['user_id'] ?>
-                            </td>
-                            <td colspan="10">ADMIN</td>
+                            <!-- <tr>
+                                <td>
+                                    <?= $user['user_id'] ?>
+                                </td>
+                                <td colspan="10">ADMIN</td>
+                            </tr> -->
                         <?php endif; ?>
                     <?php endforeach; ?>
-                </tr>
+
+                </tbody>
             </table>
         </div>
     <?php else:

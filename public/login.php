@@ -27,7 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user']['role'] = $user['role'];
             $_SESSION['user']['id'] = $user['user_id'];
             $_SESSION['user']['avatar'] = $user['file_avatar'];
-            header('location: ../');
+			if ($_SESSION['user']['role'] == "admin"){
+				header('location: manage_users.php');
+			} else{
+				header('location: ../');
+			}
         } else {
             $error = "Sai tên đăng nhập hoặc mật khẩu";
         }

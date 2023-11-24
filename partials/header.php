@@ -18,7 +18,7 @@
                             <li class="nav-item"><a class="nav-link" href=".">Look up documents</a></li>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Sign Up</a></li>
-                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support"><i class="fa-solid fa-circle-info"></i></a></li>
+                            <li class="nav-item"><a class="nav-link" href="help.php" title="Help & Support" style="cursor: help;"><i class="fa-regular fa-circle-question"></i></a></li>
                         <?php endif ?>
                         <!-- Admin -->
                         <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin'): ?>
