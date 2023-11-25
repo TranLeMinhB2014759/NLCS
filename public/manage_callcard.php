@@ -145,222 +145,280 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/partials.css">
     <link rel="stylesheet" href="css/manage.css">
+    <link rel="stylesheet" href="css/menu.css">
 </head>
 
 <body>
-    <?php include '../partials/header.php'; ?>
-    <h3 class="title-comm"><span class="title-holder">QUẢN LÝ PHIẾU MƯỢN SÁCH</span></h3>
-    <div class="container form-search row" style="padding: 0 60px;">
-        <div class="col-3">
-            <form>
-                <div class="search input-group mb-3 mt-3">
-                    <select class="form-select" name="phanloai" id="phanloai" onchange="this.form.submit()">
-                        <option value="all">Phân loại theo</option>
-                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "all") {
-                            echo "selected";
-                        } ?>
-                            value="all">Tất cả</option>
-                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "0") {
-                            echo "selected";
-                        } ?>
-                            value="0">Chờ xử lý</option>
-                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "1") {
-                            echo "selected";
-                        } ?>
-                            value="1">Đang mượn</option>
-                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "2") {
-                            echo "selected";
-                        } ?>
-                            value="2">Đã trả</option>
-                        <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "3") {
-                            echo "selected";
-                        } ?>
-                            value="3">Đã hủy</option>
-                    </select>
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="sidebar-wrapper">
+                <div class="logo">
+                    <a href="dashboard.html" class="simple-text">
+                        <img src="image/logo.png" alt="logoctu">
+                        Quản lý thư viện
+                    </a>
                 </div>
-            </form>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="nc-icon nc-chart-pie-35"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_student.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Students</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_teacher.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Teachers</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_titles.php">
+                            <i class="fa-solid fa-book"></i>
+                            <p>Manage Titles</p>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="manage_callcard.php">
+                            <i class="fa-solid fa-ticket"></i>
+                            <p>Manage Call Cards</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="statistic.php">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <p>Thống kê</p>
+                        </a>
+                    </li>
+                    <li class="nav-item active active-pro">
+                        <a class="nav-link active" href="logout.php">
+                            <p>Log out</p>
+                            <i class="fa fa-sign-out"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="col-5"></div>
-        <div class="col-4">
-            <form method="POST">
-                <div class="search input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Nhập vào số phiếu mượn..." id="keyword"
-                        name="keyword" autocomplete="off">
-                    <button class="btn btn-primary" type="submit" name="submit"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
+        <div class="main-panel">
+            <div class="content">
+                <h3 class="title-comm"><span class="title-holder">QUẢN LÝ PHIẾU MƯỢN SÁCH</span></h3>
+                <div class="container form-search row" style="padding: 0 60px;">
+                    <div class="col-3">
+                        <form>
+                            <div class="search input-group mb-3 mt-3">
+                                <select class="form-select" name="phanloai" id="phanloai" onchange="this.form.submit()">
+                                    <option value="all">Phân loại theo</option>
+                                    <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "all") {
+                                        echo "selected";
+                                    } ?> value="all">Tất cả</option>
+                                    <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "0") {
+                                        echo "selected";
+                                    } ?> value="0">Chờ xử lý</option>
+                                    <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "1") {
+                                        echo "selected";
+                                    } ?> value="1">Đang mượn</option>
+                                    <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "2") {
+                                        echo "selected";
+                                    } ?> value="2">Đã trả</option>
+                                    <option <?php if (isset($_GET['phanloai']) && $_GET['phanloai'] == "3") {
+                                        echo "selected";
+                                    } ?> value="3">Đã hủy</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-5"></div>
+                    <div class="col-4">
+                        <form method="POST">
+                            <div class="search input-group mb-3 mt-3">
+                                <input type="text" class="form-control" placeholder="Nhập vào số phiếu mượn..."
+                                    id="keyword" name="keyword" autocomplete="off">
+                                <button class="btn btn-primary" type="submit" name="submit"><i
+                                        class="fa-solid fa-magnifying-glass"></i></button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+
+                <?php if ($query->rowCount() > 0): ?>
+                    <div class="container-m">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Số thứ tự</th>
+                                    <th>Người mượn</th>
+                                    <th>Ngày mượn</th>
+                                    <th>Ngày trả</th>
+                                    <th>Danh sách mượn</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hủy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($data as $pm): ?>
+                                    <tr>
+                                        <td>
+                                            <?= $pm['pm_stt'] ?>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-light" onclick="check_user('<?= $pm['user_id'] ?>',
+                                                                    '<?= $pm['fullname'] ?>',
+                                                                    '<?= $pm['class'] ?>',
+                                                                    '<?= $pm['course'] ?>',
+                                                                    '0<?= $pm['sdt'] ?>',
+                                                                    '<?= $pm['email'] ?>',)">
+                                                <?= $pm['fullname'] ?>
+                                            </a>
+
+                                        </td>
+                                        <td>
+                                            <?= $pm['pm_ngaymuon'] ?>
+                                        </td>
+                                        <td>
+                                            <?= $pm['pm_ngayhentra'] ?>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-light" onclick="check_list_book(<?= $pm['pm_stt'] ?>)">
+                                                <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                            </a>
+                                        </td>
+                                        <?php
+                                        // Lấy danh sách các quyển sách
+                                        $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE pm_stt =:pm_stt');
+                                        $query_pm->bindValue(':pm_stt', $pm["pm_stt"]);
+                                        $query_pm->execute();
+                                        $results_pm = $query_pm->fetchAll();
+                                        $book_stt_array = array();
+                                        $title_id_array = array(); // Khởi tạo một mảng rỗng
+                                
+                                        foreach ($results_pm as $row) {
+                                            $book_stt_array[] = $row['book_stt'];
+                                            $title_id_array[] = $row['title_id']; // Thêm giá trị của book_stt vào mảng
+                                        }
+                                        $book_stt_string = implode(", ", $book_stt_array);
+                                        $title_id_string = implode(", ", $title_id_array); // Ghép các giá trị thành chuỗi
+                                        ?>
+                                        <?php if ($pm['trangthai'] == 0): ?>
+                                            <td>
+
+                                                <form action="manage_callcard.php" method="POST">
+                                                    <input id="book_status" name="book_status" hidden value="0"></input>
+                                                    <input id="book_stt_string" name="book_stt_string" hidden
+                                                        value="<?= $book_stt_string ?>"></input>
+                                                    <input id="title_id_string" name="title_id_string" hidden
+                                                        value="<?= $title_id_string ?>"></input>
+                                                    <input id="trangthai" name="trangthai" hidden value="1"></input>
+                                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden
+                                                        value="<?= date('d-m-Y') ?>"></input>
+                                                    <?php if ($pm['role'] == "student"): ?>
+                                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
+                                                            value="<?= date('d-m-Y', strtotime("+14 days")) ?>"></input>
+                                                    <?php elseif ($pm['role'] == "teacher"): ?>
+                                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
+                                                            value="<?= date('d-m-Y', strtotime("+56 days")) ?>"></input>
+                                                    <?php endif; ?>
+                                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                                    <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form action="manage_callcard.php" method="POST">
+                                                    <input id="book_status" name="book_status" hidden value="1"></input>
+                                                    <input id="book_stt_string" name="book_stt_string" hidden
+                                                        value="<?= $book_stt_string ?>"></input>
+                                                    <input id="title_id_string" name="title_id_string" hidden
+                                                        value="<?= $title_id_string ?>"></input>
+                                                    <input id="trangthai" name="trangthai" hidden value="3"></input>
+                                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value=""></input>
+                                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value=""></input>
+                                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                                    <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </td>
+
+                                        <?php elseif ($pm['trangthai'] == 1): ?>
+                                            <td colspan="2">
+                                                <form action="manage_callcard.php" method="POST">
+                                                    <input id="book_status" name="book_status" hidden value="1"></input>
+                                                    <input id="book_stt_string" name="book_stt_string" hidden
+                                                        value="<?= $book_stt_string ?>"></input>
+                                                    <input id="title_id_string" name="title_id_string" hidden
+                                                        value="<?= $title_id_string ?>"></input>
+                                                    <input id="trangthai" name="trangthai" hidden value="2"></input>
+                                                    <input id="pm_ngaymuon" name="pm_ngaymuon" hidden
+                                                        value="<?= $pm['pm_ngaymuon'] ?>"></input>
+                                                    <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
+                                                        value="<?= date('d-m-Y') ?>"></input>
+                                                    <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
+                                                    <button type="submit" id="giveback" class="btn btn-success">Xác nhận
+                                                        trả</button>
+                                                </form>
+                                            </td>
+                                        <?php elseif ($pm['trangthai'] == 2): ?>
+                                            <td colspan="2" style="color: green">Đã trả</td>
+                                        <?php elseif ($pm['trangthai'] == 3): ?>
+                                            <td colspan="2" style="color: red">Đã hủy</td>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else:
+                    echo "<div class='no-result'>Mã số phiếu mượn không tồn tại</div>"; ?>
+                <?php endif; ?>
+                <?php
+                echo '<ul class="pagination ';
+                if (!isset($_GET['phanloai'])) {
+                    if (isset($_POST['submit']) && !empty($keyword)) {
+                        echo 'disabled-ul';
+                    } else {
+                        echo '';
+                    }
+                } else {
+                    if ((isset($_POST['submit']) && empty($keyword)) || $phanloai == "all") {
+                        echo '';
+                    } else {
+                        echo 'disabled-ul';
+                    }
+                }
+                echo '">';
+                if ($currentPage > 1) {
+                    echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+                } else {
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+                }
+
+                // Hiển thị các trang trong phạm vi
+                for ($page = $startRange; $page <= $endRange; $page++) {
+                    echo '<li class="page-item';
+                    if ($page == $currentPage) {
+                        echo ' active';
+                    }
+                    echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+                }
+
+                if ($currentPage < $totalPages) {
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+                } else {
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+                }
+                echo '</ul>';
+                ?>
+            </div>
+            <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
         </div>
     </div>
-
-    <?php if ($query->rowCount() > 0): ?>
-        <div class="container-m">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Số thứ tự</th>
-                        <th>Người mượn</th>
-                        <th>Ngày mượn</th>
-                        <th>Ngày trả</th>
-                        <th>Danh sách mượn</th>
-                        <th>Trạng thái</th>
-                        <th>Hủy</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($data as $pm): ?>
-                        <tr>
-                            <td>
-                                <?= $pm['pm_stt'] ?>
-                            </td>
-                            <td>
-                                <a href="#" class="btn btn-light" onclick="check_user('<?= $pm['user_id'] ?>',
-                                                        '<?= $pm['fullname'] ?>',
-                                                        '<?= $pm['class'] ?>',
-                                                        '<?= $pm['course'] ?>',
-                                                        '0<?= $pm['sdt'] ?>',
-                                                        '<?= $pm['email'] ?>',)">
-                                    <?= $pm['fullname'] ?>
-                                </a>
-
-                            </td>
-                            <td>
-                                <?= $pm['pm_ngaymuon'] ?>
-                            </td>
-                            <td>
-                                <?= $pm['pm_ngayhentra'] ?>
-                            </td>
-                            <td>
-                                <a href="#" class="btn btn-light" onclick="check_list_book(<?= $pm['pm_stt'] ?>)">
-                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                </a>
-                            </td>
-                            <?php
-                            // Lấy danh sách các quyển sách
-                            $query_pm = $db->prepare('SELECT * FROM phieumuon WHERE pm_stt =:pm_stt');
-                            $query_pm->bindValue(':pm_stt', $pm["pm_stt"]);
-                            $query_pm->execute();
-                            $results_pm = $query_pm->fetchAll();
-                            $book_stt_array = array();
-                            $title_id_array = array(); // Khởi tạo một mảng rỗng
-                    
-                            foreach ($results_pm as $row) {
-                                $book_stt_array[] = $row['book_stt'];
-                                $title_id_array[] = $row['title_id']; // Thêm giá trị của book_stt vào mảng
-                            }
-                            $book_stt_string = implode(", ", $book_stt_array);
-                            $title_id_string = implode(", ", $title_id_array); // Ghép các giá trị thành chuỗi
-                            ?>
-                            <?php if ($pm['trangthai'] == 0): ?>
-                                <td>
-
-                                    <form action="manage_callcard.php" method="POST">
-                                        <input id="book_status" name="book_status" hidden value="0"></input>
-                                        <input id="book_stt_string" name="book_stt_string" hidden
-                                            value="<?= $book_stt_string ?>"></input>
-                                        <input id="title_id_string" name="title_id_string" hidden
-                                            value="<?= $title_id_string ?>"></input>
-                                        <input id="trangthai" name="trangthai" hidden value="1"></input>
-                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?= date('d-m-Y') ?>"></input>
-                                        <?php if ($pm['role'] == "student"): ?>
-                                            <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
-                                                value="<?= date('d-m-Y', strtotime("+14 days")) ?>"></input>
-                                        <?php elseif ($pm['role'] == "teacher"): ?>
-                                            <input id="pm_ngayhentra" name="pm_ngayhentra" hidden
-                                                value="<?= date('d-m-Y', strtotime("+56 days")) ?>"></input>
-                                        <?php endif; ?>
-                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                        <button type="submit" id="confirm" class="btn btn-primary">Xác nhận</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form action="manage_callcard.php" method="POST">
-                                        <input id="book_status" name="book_status" hidden value="1"></input>
-                                        <input id="book_stt_string" name="book_stt_string" hidden
-                                            value="<?= $book_stt_string ?>"></input>
-                                        <input id="title_id_string" name="title_id_string" hidden
-                                            value="<?= $title_id_string ?>"></input>
-                                        <input id="trangthai" name="trangthai" hidden value="3"></input>
-                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value=""></input>
-                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value=""></input>
-                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                        <button type="submit" id="cancel" class="btn btn-danger">Hủy</button>
-                                    </form>
-                                </td>
-
-                            <?php elseif ($pm['trangthai'] == 1): ?>
-                                <td colspan="2">
-                                    <form action="manage_callcard.php" method="POST">
-                                        <input id="book_status" name="book_status" hidden value="1"></input>
-                                        <input id="book_stt_string" name="book_stt_string" hidden
-                                            value="<?= $book_stt_string ?>"></input>
-                                        <input id="title_id_string" name="title_id_string" hidden
-                                            value="<?= $title_id_string ?>"></input>
-                                        <input id="trangthai" name="trangthai" hidden value="2"></input>
-                                        <input id="pm_ngaymuon" name="pm_ngaymuon" hidden value="<?= $pm['pm_ngaymuon'] ?>"></input>
-                                        <input id="pm_ngayhentra" name="pm_ngayhentra" hidden value="<?= date('d-m-Y') ?>"></input>
-                                        <input id="pm_stt" name="pm_stt" hidden value="<?= $pm['pm_stt'] ?>"></input>
-                                        <button type="submit" id="giveback" class="btn btn-success">Xác nhận trả</button>
-                                    </form>
-                                </td>
-                            <?php elseif ($pm['trangthai'] == 2): ?>
-                                <td colspan="2" style="color: green">Đã trả</td>
-                            <?php elseif ($pm['trangthai'] == 3): ?>
-                                <td colspan="2" style="color: red">Đã hủy</td>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    <?php else:
-        echo "<div class='no-result'>Mã số phiếu mượn không tồn tại</div>"; ?>
-    <?php endif; ?>
-    <?php
-    echo '<ul class="pagination ';
-    if (!isset($_GET['phanloai'])) {
-        if (isset($_POST['submit']) && !empty($keyword)) {
-            echo 'disabled-ul';
-        } else {
-            echo '';
-        }
-    } else {
-        if ((isset($_POST['submit']) && empty($keyword)) || $phanloai == "all") {
-            echo '';
-        } else {
-            echo 'disabled-ul';
-        }
-    }
-    echo '">';
-    if ($currentPage > 1) {
-        echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
-        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
-    } else {
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
-    }
-
-    // Hiển thị các trang trong phạm vi
-    for ($page = $startRange; $page <= $endRange; $page++) {
-        echo '<li class="page-item';
-        if ($page == $currentPage) {
-            echo ' active';
-        }
-        echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
-    }
-
-    if ($currentPage < $totalPages) {
-        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
-        echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
-    } else {
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
-    }
-    echo '</ul>';
-    ?>
-    <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <script type="text/javascript" src="js/btnTotop.js"></script>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>

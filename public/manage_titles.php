@@ -104,171 +104,231 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/partials.css">
-    <link rel="stylesheet" href="css/loader.css">
     <link rel="stylesheet" href="css/manage.css">
+    <link rel="stylesheet" href="css/menu.css">
 </head>
 
 <body>
-    <?php include '../partials/header.php'; ?>
-        <h3 class="title-comm"><span class="title-holder">QUẢN LÝ SÁCH TRONG THƯ VIỆN</span></h3>
-    <div class="row container form-search">
-        <div class="col-3 btn-modal">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
-                id="btn-modal-book" title="Thêm tài khoản mới">
-                Thêm Đầu Sách &nbsp<i class="fas fa-edit"></i>
-            </button>
-            <!-- The Modal -->
-            <div class="modal" id="modal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <!-- Modal Header -->
-                        <div class="modal-header">
-                            <h2 class="modal-title"><i class="fas fa-user-edit">&nbsp</i>Thêm đầu sách</h2>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="modal-body">
-                            <form method="post" id="title" class="form-horizontal" enctype="multipart/form-data"
-                                autocomplete="off">
-                                <div class="mb-3">
-                                    <label for="title_name" class="form-label"><b>Tên sách:</b></label>
-                                    <input type="text" class="form-control" id="title_name" name="title_name"
-                                        placeholder="Enter the title">
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-6">
-                                        <label for="title_author" class="form-label"><b>Tên tác giả:</b></label>
-                                        <input type="text" class="form-control" id="title_author" name="title_author"
-                                            placeholder="Enter the author">
-                                    </div>
-                                    <div class="mb-3 col-6">
-                                        <label for="title_type" class="form-label"><b>Thể loại:</b></label>
-                                        <input type="text" class="form-control" id="title_type" name="title_type"
-                                            placeholder="Enter the title type">
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-6">
-                                    <label for="title_year" class="form-label"><b>Xuất bản:</b></label>
-                                    <input class="form-control" id="title_year" name="title_year"
-                                        placeholder="Enter the year">
-                                </div>
-                                <div class="mb-3 mt-3">
-                                    <input type='file' name='title_img' id='title_img'
-                                        accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
-                                </div>
-                        </div>
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="submit" name="submit1" class="btn btn-primary btn-block">
-                                OK
-                            </button>
-                            </form>
-                            <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="sidebar-wrapper">
+                <div class="logo">
+                    <a href="dashboard.html" class="simple-text">
+                        <img src="image/logo.png" alt="logoctu">
+                        Quản lý thư viện
+                    </a>
                 </div>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="nc-icon nc-chart-pie-35"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_student.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Students</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_teacher.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Teachers</p>
+                        </a>
+                    </li>
+                    <li class="nav-item  active">
+                        <a class="nav-link" href="manage_titles.php">
+                            <i class="fa-solid fa-book"></i>
+                            <p>Manage Titles</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_callcard.php">
+                            <i class="fa-solid fa-ticket"></i>
+                            <p>Manage Call Cards</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="statistic.php">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <p>Thống kê</p>
+                        </a>
+                    </li>
+                    <li class="nav-item active active-pro">
+                        <a class="nav-link active" href="logout.php">
+                            <p>Log out</p>
+                            <i class="fa fa-sign-out"></i>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="col-5"></div>
-        <div class="col-4" style="padding: 0 60px;">
-            <form method="POST">
-                <div class="search input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Nhập vào mã số, tên sách..." id="keyword"
-                        name="keyword" autocomplete="off">
-                    <button class="btn btn-primary" type="submit" name="submit2"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
+        <div class="main-panel">
+            <div class="content">
+                <h3 class="title-comm"><span class="title-holder">QUẢN LÝ SÁCH TRONG THƯ VIỆN</span></h3>
+                <div class="row container form-search">
+                    <div class="col-3 btn-modal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
+                            id="btn-modal-book" title="Thêm tài khoản mới">
+                            Thêm Đầu Sách &nbsp<i class="fas fa-edit"></i>
+                        </button>
+                        <!-- The Modal -->
+                        <div class="modal" id="modal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h2 class="modal-title"><i class="fas fa-user-edit">&nbsp</i>Thêm đầu sách</h2>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        <form method="post" id="title" class="form-horizontal"
+                                            enctype="multipart/form-data" autocomplete="off">
+                                            <div class="mb-3">
+                                                <label for="title_name" class="form-label"><b>Tên sách:</b></label>
+                                                <input type="text" class="form-control" id="title_name"
+                                                    name="title_name" placeholder="Enter the title">
+                                            </div>
+                                            <div class="row">
+                                                <div class="mb-3 col-6">
+                                                    <label for="title_author" class="form-label"><b>Tên tác
+                                                            giả:</b></label>
+                                                    <input type="text" class="form-control" id="title_author"
+                                                        name="title_author" placeholder="Enter the author">
+                                                </div>
+                                                <div class="mb-3 col-6">
+                                                    <label for="title_type" class="form-label"><b>Thể loại:</b></label>
+                                                    <input type="text" class="form-control" id="title_type"
+                                                        name="title_type" placeholder="Enter the title type">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 col-6">
+                                                <label for="title_year" class="form-label"><b>Xuất bản:</b></label>
+                                                <input class="form-control" id="title_year" name="title_year"
+                                                    placeholder="Enter the year">
+                                            </div>
+                                            <div class="mb-3 mt-3">
+                                                <input type='file' name='title_img' id='title_img'
+                                                    accept='image/png, image/jpeg, image/gif, image/tiff' required> <br>
+                                            </div>
+                                    </div>
+                                    <!-- Modal Footer -->
+                                    <div class="modal-footer">
+                                        <button type="submit" name="submit1" class="btn btn-primary btn-block">
+                                            OK
+                                        </button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5"></div>
+                    <div class="col-4" style="padding: 0 60px;">
+                        <form method="POST">
+                            <div class="search input-group mb-3 mt-3">
+                                <input type="text" class="form-control" placeholder="Nhập vào mã số, tên sách..."
+                                    id="keyword" name="keyword" autocomplete="off">
+                                <button class="btn btn-primary" type="submit" name="submit2"><i
+                                        class="fa-solid fa-magnifying-glass"></i></button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+
+                <?php if ($query->rowCount() > 0): ?>
+                    <div class="container-m">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã số</th>
+                                    <th>Tên đầu sách</th>
+                                    <th>Tác giả</th>
+                                    <th>Thể loại</th>
+                                    <th>Xuất bản</th>
+                                    <th>Ảnh</th>
+                                    <th>Số lượng</th>
+                                    <th>Sửa</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($data as $title): ?>
+                                    <tr>
+                                        <td>
+                                            <?= $title['title_id'] ?>
+                                        </td>
+                                        <td>
+                                            <?= $title['title_name'] ?>
+                                        </td>
+                                        <td>
+                                            <?= $title['title_author'] ?>
+                                        </td>
+                                        <td>
+                                            <?= $title['title_type'] ?>
+                                        </td>
+                                        <td>
+                                            <?= $title['title_year'] ?>
+                                        </td>
+                                        <td style="background: white"><img src='uploads/<?= $title['title_img'] ?>'></td>
+                                        <td><a href="book.php?title_id=<?= $title['title_id'] ?>" class='btn btn-light'><i
+                                                    class="fa-solid fa-eye"></i> Xem chi tiết</a></td>
+                                        <td><a href="edit_title.php?id=<?= $title['title_id'] ?>"
+                                                class='btn btn-warning'>Edit</a></td>
+                                        <td>
+                                            <a href="delete_title.php?id=<?= $title['title_id'] ?>" class='btn btn-danger'
+                                                id='btn_delete'>Delete</a>
+                                        </td>
+                                    <tr>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else:
+                    echo "<div class='no-result'>Mã đầu sách không tồn tại</div>"; ?>
+                <?php endif; ?>
+                <?php
+                echo '<ul class="pagination ';
+                if (isset($_POST['submit2']) && !empty($keyword)) {
+                    echo 'disabled-ul';
+                }
+                echo '">';
+                if ($currentPage > 1) {
+                    echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
+                } else {
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
+                }
+
+                // Hiển thị các trang trong phạm vi
+                for ($page = $startRange; $page <= $endRange; $page++) {
+                    echo '<li class="page-item';
+                    if ($page == $currentPage) {
+                        echo ' active';
+                    }
+                    echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
+                }
+
+                if ($currentPage < $totalPages) {
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
+                    echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
+                } else {
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
+                    echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
+                }
+                echo '</ul>';
+                ?>
+            </div>
+            <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
         </div>
     </div>
-
-    <?php if ($query->rowCount() > 0): ?>
-        <div class="container-m">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mã số</th>
-                        <th>Tên đầu sách</th>
-                        <th>Tác giả</th>
-                        <th>Thể loại</th>
-                        <th>Xuất bản</th>
-                        <th>Ảnh</th>
-                        <th>Số lượng</th>
-                        <th>Sửa</th>
-                        <th>Xóa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($data as $title): ?>
-                        <tr>
-                            <td>
-                                <?= $title['title_id'] ?>
-                            </td>
-                            <td>
-                                <?= $title['title_name'] ?>
-                            </td>
-                            <td>
-                                <?= $title['title_author'] ?>
-                            </td>
-                            <td>
-                                <?= $title['title_type'] ?>
-                            </td>
-                            <td>
-                                <?= $title['title_year'] ?>
-                            </td>
-                            <td style="background: white"><img src='uploads/<?= $title['title_img'] ?>'></td>
-                            <td><a href="book.php?title_id=<?= $title['title_id'] ?>" class='btn btn-light'><i
-                                        class="fa-solid fa-eye"></i> Xem chi tiết</a></td>
-                            <td><a href="edit_title.php?id=<?= $title['title_id'] ?>" class='btn btn-warning'>Edit</a></td>
-                            <td>
-                                <a href="delete_title.php?id=<?= $title['title_id'] ?>" class='btn btn-danger'
-                                    id='btn_delete'>Delete</a>
-                            </td>
-                        <tr>
-                        <?php endforeach; ?>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    <?php else:
-        echo "<div class='no-result'>Mã đầu sách không tồn tại</div>"; ?>
-    <?php endif; ?>
-    <?php
-    echo '<ul class="pagination ';
-    if (isset($_POST['submit2']) && !empty($keyword)) {
-        echo 'disabled-ul';
-    }
-    echo '">';
-    if ($currentPage > 1) {
-        echo '<li class="page-item"><a class="page-link" href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>';
-        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage - 1) . '"><i class="fa-solid fa-angle-left"></i></a></li>';
-    } else {
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-left"></i></span></li>';
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-left"></i></span></li>';
-    }
-
-    // Hiển thị các trang trong phạm vi
-    for ($page = $startRange; $page <= $endRange; $page++) {
-        echo '<li class="page-item';
-        if ($page == $currentPage) {
-            echo ' active';
-        }
-        echo '"><a class="page-link" href="?page=' . $page . '">' . $page . '</a></li>';
-    }
-
-    if ($currentPage < $totalPages) {
-        echo '<li class="page-item"><a class="page-link" href="?page=' . ($currentPage + 1) . '"><i class="fa-solid fa-angle-right"></i></a></li>';
-        echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . '"><i class="fa-solid fa-angles-right"></i></a></li>';
-    } else {
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angle-right"></i></span></li>';
-        echo '<li class="page-item disabled"><span class="page-link"><i class="fa-solid fa-angles-right"></i></span></li>';
-    }
-    echo '</ul>';
-    ?>
-    <button onclick="topFunction()" id="myBtn" title="Go to top"><img src="image/toTop.png" alt=""></button>
     <script type="text/javascript" src="js/btnTotop.js"></script>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>

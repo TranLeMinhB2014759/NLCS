@@ -65,45 +65,105 @@ $title = $query->rowCount();
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/partials.css">
     <link rel="stylesheet" href="css/manage.css">
+    <link rel="stylesheet" href="css/menu.css">
 </head>
 
 <body>
-    <?php include '../partials/header.php'; ?>
-    <div class="container" style="padding: 20px">
-        <div class="row">
-            <div class="col-12 col-sm-4">
-                <div class="title">
-                    THỐNG KÊ TÀI KHOẢN
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="sidebar-wrapper">
+                <div class="logo">
+                    <a href="dashboard.html" class="simple-text">
+                        <img src="image/logo.png" alt="logoctu">
+                        Quản lý thư viện
+                    </a>
                 </div>
-                <div class="text-center">
-                    Tổng số:
-                    <?= $student + $teacher+ $other ?>
-                </div>
-                <div id="donut-chart-account"></div>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="nc-icon nc-chart-pie-35"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_student.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Students</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_users_teacher.php">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Manage Teachers</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_titles.php">
+                            <i class="fa-solid fa-book"></i>
+                            <p>Manage Titles</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_callcard.php">
+                            <i class="fa-solid fa-ticket"></i>
+                            <p>Manage Call Cards</p>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="statistic.php">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <p>Thống kê</p>
+                        </a>
+                    </li>
+                    <li class="nav-item active active-pro">
+                        <a class="nav-link active" href="logout.php">
+                            <p>Log out</p>
+                            <i class="fa fa-sign-out"></i>
+                        </a>
+                    </li>
+                </ul>
             </div>
+        </div>
+        <div class="main-panel">
+            <div class="content">
+            <h3 class="title-comm"><span class="title-holder">THỐNG KÊ</span></h3>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            <div class="title">
+                                THỐNG KÊ TÀI KHOẢN
+                            </div>
+                            <div class="text-center">
+                                Tổng số:
+                                <?= $student + $teacher + $other ?>
+                            </div>
+                            <div id="donut-chart-account"></div>
+                        </div>
 
-            <div class="col-12 col-sm-4">
-                <div class="title">
-                    THỐNG KÊ PHIẾU MƯỢN
-                </div>
-                <div class="text-center">
-                    Tổng số:
-                    <?= $pending + $borrow + $return + $cancel ?>
-                </div>
-                <div id="donut-chart-pm"></div>
-            </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="title">
+                                THỐNG KÊ PHIẾU MƯỢN
+                            </div>
+                            <div class="text-center">
+                                Tổng số:
+                                <?= $pending + $borrow + $return + $cancel ?>
+                            </div>
+                            <div id="donut-chart-pm"></div>
+                        </div>
 
-            <div class="col-12 col-sm-4">
-                <div class="title">
-                    THỐNG KÊ ĐẦU SÁCH
+                        <div class="col-12 col-sm-4">
+                            <div class="title">
+                                THỐNG KÊ ĐẦU SÁCH
+                            </div>
+                            <div class="text-center">
+                                Tổng số:
+                                <?= $title ?>
+                            </div>
+                            <div id="donut-chart-title"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-center">
-                    Tổng số:
-                    <?= $title ?>
-                </div>
-                <div id="donut-chart-title"></div>
             </div>
         </div>
     </div>
