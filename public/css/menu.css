@@ -229,7 +229,7 @@ body>.navbar-collapse:after {
     position: relative;
     float: right;
     width: calc(100% - 260px);
-    min-height: 100%;
+    min-height: 737px;
 }
 
 .main-panel>.content {

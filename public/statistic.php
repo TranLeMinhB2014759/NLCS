@@ -52,6 +52,29 @@ $cancel = $status_counts[3];
 $query = $db->prepare("SELECT * FROM dausach");
 $query->execute();
 $title = $query->rowCount();
+$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+// Initialize empty arrays
+$xHotsearch = [];
+$yHotsearch = [];
+
+foreach ($rows as $row) {
+    $xHotsearch[] = $row['title_name'];
+    $yHotsearch[] = $row['searched'];
+}
+
+$xHotsearchJSON = json_encode($xHotsearch);
+$yHotsearchJSON = json_encode($yHotsearch);
+
+//Total Books
+$query = $db->prepare("
+    SELECT dausach.title_name, COUNT(quyensach.book_stt) as soLuong
+    FROM dausach
+    LEFT JOIN quyensach ON dausach.title_id = quyensach.title_id
+    GROUP BY dausach.title_name
+");
+$query->execute();
+$book = $query->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,13 +85,18 @@ $title = $query->rowCount();
     <title>Statistics</title>
     <link rel="shortcut icon" href="image/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link rel="stylesheet" href="css/bootstrap-5.3.0-alpha3-dist/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/manage.css">
     <link rel="stylesheet" href="css/menu.css">
 </head>
-
+<style>
+    .total-book{
+        text-align: left;
+        padding: 20px;
+    }
+</style>
 <body>
     <div class="wrapper">
         <div class="sidebar">
@@ -127,40 +155,41 @@ $title = $query->rowCount();
         </div>
         <div class="main-panel">
             <div class="content">
-            <h3 class="title-comm"><span class="title-holder">THỐNG KÊ</span></h3>
+                <h3 class="title-comm"><span class="title-holder">THỐNG KÊ</span></h3>
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 col-sm-4">
-                            <div class="title">
+                        <div class="col-12 col-sm-6">
+                            <div class="text-center">
                                 THỐNG KÊ TÀI KHOẢN
                             </div>
-                            <div class="text-center">
-                                Tổng số:
-                                <?= $student + $teacher + $other ?>
-                            </div>
-                            <div id="donut-chart-account"></div>
+                            <canvas id="accounts" style="width:100%;max-width:600px; margin-bottom: 100px"></canvas>
                         </div>
 
-                        <div class="col-12 col-sm-4">
-                            <div class="title">
+                        <div class="col-12 col-sm-6">
+                            <div class="text-center">
                                 THỐNG KÊ PHIẾU MƯỢN
                             </div>
-                            <div class="text-center">
-                                Tổng số:
-                                <?= $pending + $borrow + $return + $cancel ?>
-                            </div>
-                            <div id="donut-chart-pm"></div>
+                            <canvas id="callcards" style="width:100%;max-width:600px; margin-bottom: 100px"></canvas>
                         </div>
-
-                        <div class="col-12 col-sm-4">
-                            <div class="title">
-                                THỐNG KÊ ĐẦU SÁCH
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-8">
                             <div class="text-center">
-                                Tổng số:
-                                <?= $title ?>
+                                THỐNG KÊ ĐẦU SÁCH VÀ TÌM KIẾM
                             </div>
-                            <div id="donut-chart-title"></div>
+                            <canvas id="hotsearch" style="width:100%; margin-bottom: 100px"></canvas>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="text-center">
+                                THỐNG KÊ TỔNG SỐ QUYỂN SÁCH CÁC LOẠI
+                            </div>
+                            <div class="total-book">
+                                <?php 
+                                foreach ($book as $row) {
+                                    echo $row['title_name'] . ": " . $row['soLuong'] . "<br>";
+                                }?>
+                            </div>
+                            <canvas id="hotsearch" style="width:100%; margin-bottom: 100px"></canvas>
                         </div>
                     </div>
                 </div>
@@ -169,68 +198,85 @@ $title = $query->rowCount();
     </div>
     <!--===============================================================================================-->
     <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
     <script type="text/javascript" src="js/bootstrap-5.3.0-alpha3-dist/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             // ACCOUNTs
-            Morris.Donut({
-                element: 'donut-chart-account',
-                resize: true,
-                colors: [
-                    '#0AFC53',
-                    '#07e7F7',
-                    '#B2B4C2',
-                ],
-                //labelColor:"#cccccc", // text color
-                //backgroundColor: '#333333', // border color
-                data: [
-                    { label: "Teacher", value: <?= $teacher ?> },
-                    { label: "Student", value: <?= $student ?> },
-                    { label: "Other", value: <?= $other ?> },
-                ]
+            var xAccount = ["Teacher", "Student", "Other"];
+            var yAccount = [<?= $teacher ?>, <?= $student ?>, <?= $other ?>];
+            var barColors = [
+                "#b91d47",
+                "#00aba9",
+                "#2b5797",
+            ];
+
+            new Chart("accounts", {
+                type: "doughnut",
+                data: {
+                    labels: xAccount,
+                    datasets: [{
+                        backgroundColor: barColors,
+                        data: yAccount
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: "Tổng số tài khoản: <?= $student + $teacher + $other ?>"
+                    }
+                }
             });
 
             //CALL CARDs
-            var colorDanger = "#FF1744";
-            Morris.Donut({
-                element: 'donut-chart-pm',
-                resize: true,
-                colors: [
-                    '#0AFC53',
-                    '#07e7F7',
-                    '#B2B4C2',
-                ],
-                //labelColor:"#cccccc", // text color
-                //backgroundColor: '#333333', // border color
-                data: [
-                    { label: "Returned", value: <?= $return ?> },
-                    { label: "Borrowing", value: <?= $borrow ?> },
-                    { label: "Pending", value: <?= $pending ?> },
-                    { label: "Cancelled", value: <?= $cancel ?>, color: colorDanger }
-                ]
+            var xCallCard = ["Returned", "Borrowing", "Pending", "Cancelled"];
+            var yCallCard = [<?= $return ?>, <?= $borrow ?>, <?= $pending ?>, <?= $cancel ?>];
+            var barColors = [
+                "#b91d47",
+                "#00aba9",
+                "#2b5797",
+                "#e8c3b9",
+            ];
+
+            new Chart("callcards", {
+                type: "doughnut",
+                data: {
+                    labels: xCallCard,
+                    datasets: [{
+                        backgroundColor: barColors,
+                        data: yCallCard
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: "Tổng số phiếu mượn: <?= $pending + $borrow + $return + $cancel ?>"
+                    }
+                }
             });
 
-            // //TITLEs
-            // var colorDanger = "#FF1744";
-            // Morris.Donut({
-            // element: 'donut-chart-title',
-            // resize: true,
-            // colors: [
-            //     '#0AFC53',
-            //     '#07e7F7',
-            //     '#B2B4C2',
-            // ],
-            // //labelColor:"#cccccc", // text color
-            // //backgroundColor: '#333333', // border color
-            // data: [
-            //     {label:"Returned", value:<?= $return ?>},
-            //     {label:"Borrowing", value:<?= $borrow ?>},
-            //     {label:"Pending", value:<?= $pending ?>},
-            //     {label:"Cancelled", value:<?= $cancel ?>, color:colorDanger}
-            // ]
-            // });
+            var xHotsearch = <?php echo $xHotsearchJSON; ?>;
+            var yHotsearch = <?php echo $yHotsearchJSON; ?>;
+            var barColors = ["red", "green", "blue", "orange", "brown"];
+
+            new Chart("hotsearch", {
+                type: "bar",
+                data: {
+                    labels: xHotsearch,
+                    datasets: [{
+                        backgroundColor: barColors,
+                        data: yHotsearch
+                    }]
+                },
+                options: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: "Tổng số sách có trong thư viện: <?=$title?>"
+                    }
+                }
+            });
+
         })
     </script>
 </body>
