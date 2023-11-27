@@ -507,9 +507,9 @@ $rows_c = $query_cancelled->rowCount();
 
                                                 <div class="mb-3 mt-3">
                                                     <label for="user_id" class="form-label">
-                                                        User_ID:
+                                                        Tên:
                                                     </label>
-                                                    <input class="form-control" disabled value="<?php echo $_SESSION['user']['id'] ?>" autocomplete="off">
+                                                    <input class="form-control" disabled value="<?php echo $_SESSION['user']['name'] ?>" autocomplete="off">
                                                     <input id="user_id" name="user_id" hidden value="<?php echo $_SESSION['user']['id'] ?>" autocomplete="off">
                                                 </div>
 
