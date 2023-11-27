@@ -26,8 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $query->execute();
         $results = $query->fetchAll();
         $rows = $query->rowCount();
+    }
+    elseif ($select_search === 'title_type') {
+            $query = $db->prepare('SELECT * FROM dausach WHERE title_type LIKE :keyword ORDER BY title_id');
+            $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
+    
+            $query->execute();
+            $results = $query->fetchAll();
+            $rows = $query->rowCount();
     } else {
-        $query = $db->prepare('SELECT * FROM dausach WHERE title_id LIKE :keyword OR title_name LIKE :keyword OR title_author LIKE :keyword ORDER BY title_id');
+        $query = $db->prepare('SELECT * FROM dausach WHERE title_id LIKE :keyword OR title_name LIKE :keyword OR title_author LIKE :keyword OR title_type LIKE :keyword ORDER BY title_id');
         $query->bindValue(':keyword', '%' . $keyword . '%', PDO::PARAM_STR);
 
         $query->execute();
@@ -122,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <li style="font-weight:400"><b>Tìm theo đầu sách: </b>Mã số sách</li>
                                 <li style="font-weight:400"><b>Tìm tác giả: </b>Tên Tác giả</li>
                                 <li style="font-weight:400"><b>Tìm tên sách: </b>Tên sách</li>
+                                <li style="font-weight:400"><b>Tìm theo thể loại: </b>Tên thể loại</li>
                             </ul>
                         </div>
                     </div>
@@ -161,6 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <option value="title_id">Đầu sách</option>
                                                 <option value="title_name">Tên sách</option>
                                                 <option value="title_author">Tên tác giả</option>
+                                                <option value="title_type">Thể loại</option>
                                             </select>
                                             <input type="text" class="form-control" placeholder="Write Here..."
                                                 id="keyword" name="keyword">

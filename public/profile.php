@@ -187,7 +187,7 @@ $rows_c = $query_cancelled->rowCount();
                         <ul>
                             <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a>
                             </li>
-                            <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "student"):?>
+                            <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "teacher"):?>
                             <li id="tab2"><a href="#tab2" onclick="active_waiting()">Chở xử lý (
                                     <?= $rows_w ?>)
                                 </a></li>
@@ -480,7 +480,7 @@ $rows_c = $query_cancelled->rowCount();
                                         id="delete" title="Xóa tài khoản">Delete your Account?</a></div>
                             </div>
                         </div>
-                        <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "student"):?>
+                        <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "teacher"):?>
                         <!-- Phiếu mượn sách -->
                         <div class="tab2 animate__animated" style="display:none">
                             <button id="btnCallCard" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCallCard" title="Đăng kí mượn sách" style="margin-bottom: 10px;">
@@ -545,7 +545,7 @@ $rows_c = $query_cancelled->rowCount();
                                             </div>
                                             <!-- Modal footer -->
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary">
+                                                <button type="submit" class="btn btn-primary" id="submit-callcard">
                                                     OK
                                                 </button>
                                                 </form>
@@ -801,6 +801,12 @@ $rows_c = $query_cancelled->rowCount();
         });
     </script>
     <script>
+        $('#submit-callcard').click(function () {
+            if (confirm('Bạn chắc chắn về các thông tin trong phiếu của mình không?')) {
+                return true;
+            }
+            return false;
+        });
         $('#delete').click(function () {
             if (confirm('Bạn chắc chắn muốn xóa tài khoản của mình không?')) {
                 return true;

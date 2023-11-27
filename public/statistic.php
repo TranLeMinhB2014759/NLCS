@@ -208,7 +208,7 @@ $book = $query->fetchAll(PDO::FETCH_ASSOC);
             var barColors = [
                 "#b91d47",
                 "#00aba9",
-                "#2b5797",
+                "#ffffff",
             ];
 
             new Chart("accounts", {
@@ -229,13 +229,13 @@ $book = $query->fetchAll(PDO::FETCH_ASSOC);
             });
 
             //CALL CARDs
-            var xCallCard = ["Returned", "Borrowing", "Pending", "Cancelled"];
-            var yCallCard = [<?= $return ?>, <?= $borrow ?>, <?= $pending ?>, <?= $cancel ?>];
+            var xCallCard = ["Pending", "Borrowing", "Returned", "Cancelled"];
+            var yCallCard = [<?= $pending ?>, <?= $borrow ?>, <?= $return ?>, <?= $cancel ?>];
             var barColors = [
-                "#b91d47",
+                "#dcdcdc",
                 "#00aba9",
-                "#2b5797",
-                "#e8c3b9",
+                "#30fc30",
+                "#ff0000",
             ];
 
             new Chart("callcards", {
@@ -272,7 +272,7 @@ $book = $query->fetchAll(PDO::FETCH_ASSOC);
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: "Tổng số sách có trong thư viện: <?=$title?>"
+                        text: "Tổng số đầu sách có trong thư viện: <?=$title?>"
                     }
                 }
             });
