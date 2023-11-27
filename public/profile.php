@@ -187,6 +187,7 @@ $rows_c = $query_cancelled->rowCount();
                         <ul>
                             <li id="tab1" class="active"><a href="#" onclick="active_profile()">Thông tin cá nhân</a>
                             </li>
+                            <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "student"):?>
                             <li id="tab2"><a href="#tab2" onclick="active_waiting()">Chở xử lý (
                                     <?= $rows_w ?>)
                                 </a></li>
@@ -199,6 +200,7 @@ $rows_c = $query_cancelled->rowCount();
                             <li id="tab5"><a href="#tab5" onclick="active_expired()">Đã bị hủy (
                                     <?= $rows_c ?>)
                                 </a></li>
+                            <?php endif?>
                         </ul>
                     </div>
                 </div>
@@ -478,7 +480,7 @@ $rows_c = $query_cancelled->rowCount();
                                         id="delete" title="Xóa tài khoản">Delete your Account?</a></div>
                             </div>
                         </div>
-                        
+                        <?php if ($_SESSION['user']['role'] == "student" || $_SESSION['user']['role'] == "student"):?>
                         <!-- Phiếu mượn sách -->
                         <div class="tab2 animate__animated" style="display:none">
                             <button id="btnCallCard" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCallCard" title="Đăng kí mượn sách" style="margin-bottom: 10px;">
@@ -708,6 +710,7 @@ $rows_c = $query_cancelled->rowCount();
                             echo '<div class="tab5 text-center animate__animated" style="display:none">Không có thông tin</div>';
                         }
                         ?>
+                        <?php endif?>
                     </div>
                 </div>
             </div>
